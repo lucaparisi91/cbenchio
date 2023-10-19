@@ -94,7 +94,7 @@ int main(int argc, char ** argv)
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
     
 
-    size_t globalDataSize = 1e+9;
+    size_t globalDataSize = 1e+8;
     size_t nData = globalDataSize/(sizeof(real_t)*nRanks);
 
     double tStart,tEnd;
@@ -124,13 +124,6 @@ int main(int argc, char ** argv)
 
     writeTime.computeMaxElapsed();
 
-
-    
-    
-    //auto  writeTime = tEnd - tStart;
-
-    //double writeTimeSum=0;
-
     
     if (rank == 0)
     {
@@ -138,7 +131,7 @@ int main(int argc, char ** argv)
         std::cout << "Data Size: " << globalDataSizeGB << "GB" << std::endl;
         std::cout << "N. ranks: " << nRanks << std::endl;
         std::cout << "BW: " << globalDataSizeGB/writeTime.maxElapsed()  << " GB/s" << std::endl;
-        
+
     }
 
     
