@@ -18,6 +18,7 @@ Possible other factors to explore
 - tuning environment variables
 - looking at verbose output of MPI-IO
 - write 1D contigous array ( no file locking issues )
+- use MPICH_MPIIO_STATS, MPICH_MPIIO_TIMERS, MPICH_MPIIO_HINTS_DISPLAY
 
 # Materials
 - Documentation on how to use darshan
