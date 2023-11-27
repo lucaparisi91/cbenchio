@@ -1,8 +1,8 @@
 
 
-#include "posix_io.h"
+#include "../src/posix_io.h"
 #include <mpi.h>
-#include "dataGenerator.h"
+#include "../src/dataGenerator.h"
 
 #include <iostream>
 

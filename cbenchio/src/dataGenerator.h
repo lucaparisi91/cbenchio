@@ -11,6 +11,9 @@ class dataGenerator
 {
     public:
 
+
+
+
     dataGenerator(size_t globalSize) : real_distribution(0,1)
     {
         seed = 15686;
@@ -47,7 +50,7 @@ class dataGenerator
     int nDataLocal;
     std::default_random_engine generator;
     std::uniform_real_distribution<real_t> real_distribution;
-
+    
 };
 
 
