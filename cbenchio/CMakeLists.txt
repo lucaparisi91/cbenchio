@@ -8,6 +8,7 @@ find_package( MPI REQUIRED )
 include( tools.cmake)
 
 add_subdirectory( src )
+add_subdirectory(eigen)
 
 enable_testing()
 add_subdirectory( test )
