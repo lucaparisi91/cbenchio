@@ -4,10 +4,11 @@
 #include "definitions.h"
 #include "mpi.h"
 #include <random>
+#include "data.h"
 
 
 
-class dataGenerator
+/* class dataGenerator
 {
     public:
 
@@ -20,8 +21,6 @@ class dataGenerator
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
         generator.seed( seed + rank);
-
-
 
     }
 
@@ -76,7 +75,7 @@ class vectorDataGenerator : public dataGenerator
         int nDataLocal;
 
 };
-
+ */
 
 
 #endif
