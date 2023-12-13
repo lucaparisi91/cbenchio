@@ -11,15 +11,21 @@ namespace testing
 
             MPI_Abort(MPI_COMM_WORLD,1);
         }
+        else 
+        {
+            std::cerr << "Check Succeeded : " ;
+            std::cerr << msg << std::endl;
+
+        }
     };
 
     template<class T1,class T2>
     void check_near( T1 a, T2 b   , std::string usrMsg = "",real_t tol=1e-7)
     {
-        auto diff = std::abs( a -b );
+        auto cond = std::abs( a -b ) < tol;
         std::stringstream ss;
         ss << usrMsg << std::endl;
-        ss << a << " differ from " << b << std::endl; 
+        if (!cond) ss << a << " differ from " << b << std::endl; 
         check( std::abs( a -b ) < tol ,ss.str() );
     }
 

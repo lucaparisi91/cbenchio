@@ -6,7 +6,13 @@
 #include <random>
 #include "data.h"
 
+class indexDataGenerator
+{
+    public:
+    
+    void generate( distributedCartesianArray & disData);
 
+};
 
 /* class dataGenerator
 {

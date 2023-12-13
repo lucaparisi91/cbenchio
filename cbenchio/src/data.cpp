@@ -87,5 +87,5 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm,std::array<i
     localSize=localShape[0] * localShape[1] * localShape[2] ;
 
     localData.resize( { localShape[0] , localShape[1],localShape[2] });
-
+    
 }
