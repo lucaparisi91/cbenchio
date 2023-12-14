@@ -22,6 +22,7 @@ int main(int argc, char ** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
     
+    {
     distributedCartesianArray data(MPI_COMM_WORLD, { 100, 100, 1  }) ;
     
     // std::cout << "size "<<rank << " "<< data.getLocalSize() << std::endl;
@@ -43,7 +44,7 @@ int main(int argc, char ** argv)
         testing::check( localShape[0]==100,"localShape test");
         testing::check( localShape[1]==100,"localShape test");
         testing::check( localSize==100*100,"localSize test");
-        
+
     }
     else if (nRanks==2)
     {
@@ -70,6 +71,34 @@ int main(int argc, char ** argv)
     if (rank ==0)
     {
         testing::check_near( sum_global, sum_expected,"Data Sum");
+    }
+
+    testing::check_near( 2 , data.getNDimensions()  ,"nDimensions");
+
+    }
+
+    /*
+    1D case
+    */
+    {
+        distributedCartesianArray data(MPI_COMM_WORLD, { 100,1, 1  }) ;
+
+        if (nRanks ==3)
+        {
+            if (rank == 0 )
+                {
+                testing::check_near( data.getLocalShape() , {34,1,1} ,"localShape");
+                testing::check_near( data.getLocalOffset() , {0,0,0} ,"localShape");
+                }
+            else 
+                {
+                testing::check_near( data.getLocalShape() , {33,1,1} ,"localShape");
+
+                if (rank==1) testing::check_near( data.getLocalOffset() , {34,0,0} ,"localShape");
+                }
+        }
+        
+    
     }
     
     //testing::check_near( )

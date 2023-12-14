@@ -39,7 +39,7 @@ namespace testing
     }
 
     template<class T>
-    void log( std::array<T,3> arr, const std::string & msg )
+    void log( std::array<T,3> arr, const std::string & msg="" )
     {
         int rank=-1, nRanks=-1;
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);

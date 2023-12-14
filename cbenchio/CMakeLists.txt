@@ -9,6 +9,6 @@ include( tools.cmake)
 
 add_subdirectory( src )
 add_subdirectory(eigen)
-
+add_subdirectory(yaml-cpp)
 enable_testing()
 add_subdirectory( test )

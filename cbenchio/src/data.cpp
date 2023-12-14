@@ -34,7 +34,21 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm,std::array<i
     globalShape=globalShape_;
     int rank=-1, nRanks=-1;
 
-    std::array<int,3 > dims{0,0,1};
+    nDimensions=3;
+    std::array<int,3 > dims{0,0,0};
+
+
+    if ( globalShape[2] == 1 )
+    {
+        nDimensions-=1;
+        dims[2]=1;
+        if (globalShape[1] == 1)
+        {
+            nDimensions-=1;
+            dims[1]=1;
+        }
+    } 
+
 
     MPI_Comm_rank(comm, &rank);
     MPI_Comm_size(comm, &nRanks);
@@ -60,8 +74,11 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm,std::array<i
 
     MPI_Cart_get( cartesian_comm, 3 , nRanksCartesian.begin() , period.begin() , rankCartesian.begin() );
 
+    globalSize=1;
     for (int d=0;d<3;d++)
     {
+        globalSize*=globalShape[d];
+
         if ( nRanksCartesian[d] != 0 )
         {
 
@@ -87,5 +104,5 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm,std::array<i
     localSize=localShape[0] * localShape[1] * localShape[2] ;
 
     localData.resize( { localShape[0] , localShape[1],localShape[2] });
-    
+
 }

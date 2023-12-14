@@ -8,13 +8,20 @@
 
 #include "posix_io.h"
 
+namespace posix
+{
+#include <fcntl.h>
+#include <unistd.h>
+
+}
+
 posix_io::posix_io(std::string basename)
 {
-MPI_Comm_rank(MPI_COMM_WORLD, & rank);
-MPI_Comm_size(MPI_COMM_WORLD, & nRanks);
+    //MPI_Comm_rank(MPI_COMM_WORLD, & rank);
+    //MPI_Comm_size(MPI_COMM_WORLD, & nRanks);
     
     std::stringstream s;
-    s << basename << "_rank" << rank << ".out"  ;
+    s << basename << ".out"  ;
 
     filename = s.str();
 
@@ -22,37 +29,27 @@ MPI_Comm_size(MPI_COMM_WORLD, & nRanks);
 
 
 
-void posix_io::write( const std::vector<real_t> & data, timer & timer) const
+void posix_io::write( distributedCartesianArray & data) const
 {
-    std::fstream f( filename, std::ios::out|std::ios::binary);
-    f.seekp(std::ios::beg);
+    auto f = posix::open( filename.c_str(), O_WRONLY | O_CREAT );
 
-    timer.start();
-    f.write( (char*) (&data[0]) , data.size()*sizeof(real_t));
-    f.flush();
-    timer.end();
 
-    f.close();
+    posix::lseek( f, data.getLocalOffset()[0]*sizeof(real_t), SEEK_SET );
+    posix::write(f, (const char *)data.getData().data(), data.getLocalSize()*sizeof(real_t));
+    posix::close(f);
 }
 
-void posix_io::read( std::vector<real_t> & data, timer & timer)
+void posix_io::read( distributedCartesianArray & data)
 {
-    auto read_size = std::filesystem::file_size(filename);
+    
+    auto f = posix::open( filename.c_str(), O_RDONLY );
 
-    std::fstream f( filename, std::ios::in|std::ios::binary);
-    f.seekp(std::ios::beg);
+    posix::lseek( f, data.getLocalOffset()[0]*sizeof(real_t), SEEK_SET );
+    posix::read(f, (char *)data.getData().data(), data.getLocalSize()*sizeof(real_t));
 
-    auto nData=read_size/sizeof(real_t);
+    posix::close(f);
 
-    data.resize(nData);
-
-
-    timer.start();
-    f.read( (char*) (&data[0]) , read_size);
-    f.flush();
-    timer.end();
-
-    f.close();
+   
 }
 
 

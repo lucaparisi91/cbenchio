@@ -5,6 +5,7 @@
 #include "timers.h"
 #include <string>
 #include <vector>
+#include "data.h"
 
 
 class posix_io
@@ -13,9 +14,9 @@ class posix_io
 
     posix_io(std::string basename);
 
-    void write( const std::vector<real_t> & data, timer & timer) const;
-    
-    void read( std::vector<real_t> & data, timer & timer);
+    void write( distributedCartesianArray & data) const;
+
+    void read( distributedCartesianArray & data);
 
 
     private:

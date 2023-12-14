@@ -1,3 +1,7 @@
+#ifndef DATA_H
+#define DATA_H
+
+
 #include <vector>
 #include <mpi.h>
 #include "definitions.h"
@@ -65,13 +69,15 @@ class distributedCartesianArray
     const auto & getGlobalShape() const { return globalShape;}
     const auto & getLocalOffset() const { return localOffset;}
     const auto & getLocalSize() const { return localSize;}
+    const auto & getGlobalSize() const { return globalSize;}
 
     
     const auto & getData() const { return localData; }
     auto & getData() { return localData; }
 
     auto getCartesianCommunicator() {return cartesian_comm;}
-
+    
+    auto getNDimensions() const { return nDimensions;}
     private:
 
     
@@ -84,7 +90,12 @@ class distributedCartesianArray
     MPI_Comm cartesian_comm;
 
     index_t localSize;
+    index_t globalSize;
+
+    int nDimensions;
 
 
 
  };
+
+ #endif

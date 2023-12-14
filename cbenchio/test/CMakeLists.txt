@@ -30,3 +30,8 @@ add_parallel_test( test_distributedCartesianArray 1)
 add_parallel_test( test_distributedCartesianArray 2)
 
 add_test_executable( test_posix_io )
+add_parallel_test( test_posix_io 1)
+add_parallel_test( test_posix_io 13)
+add_parallel_test( test_posix_io 2)
+
+
