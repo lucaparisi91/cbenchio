@@ -1,6 +1,6 @@
 # All size units are in GB 
 
 benchmark:
-  - API: "posix" # Only supports 1D array
-  - filePerProcess: True # If false all processes will write to a single shared file
-  - size: 8
+  API: "posix" # Only supports 1D array
+  filePerProcess: True # If false all processes will write to a single shared file
+  shape: [1000000000,1,1] 
