@@ -6,6 +6,8 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 #include "../src/mpi_io.h"
 #include "tools.h"
+#include "hdf5.h"
+
 
 int main(int argc, char ** argv)
 {
@@ -27,23 +29,8 @@ int main(int argc, char ** argv)
     indexDataGenerator gen;
 
     gen.generate(data1);
-    
-    
-   mpi_io writer( "data.out");
 
-   writer.write( data1);
-
-   mpi_io reader( "data.out");
-
-   reader.read( data2);
-   
-
-
-    real_t diff = ((Eigen::Tensor<real_t,0>)((data1.getData() - data2.getData()).abs().sum() ))();
-
-    testing::check_near( diff, 0, "Data distance");
-
-
+    file_id = H5Fcreate("data.out", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
 
     MPI_Finalize();

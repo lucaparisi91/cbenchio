@@ -30,7 +30,7 @@ int main(int argc, char ** argv)
 
     // auto data = randVecGen.generate();
 
-    auto writer = posix_io("data" );
+    auto writer = posix_io("data.out" );
 
     timer writeTime;
     timer readTime;
@@ -67,7 +67,6 @@ int main(int argc, char ** argv)
     {
         testing::check_near( diff_global,0 , "write/read distance null") ;
     }
-    
 
     // readTime.computeMaxElapsed();
     

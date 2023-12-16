@@ -15,23 +15,14 @@ namespace posix
 
 }
 
-posix_io::posix_io(std::string basename)
+posix_io::posix_io(std::string basename) : filename(basename)
 {
-    //MPI_Comm_rank(MPI_COMM_WORLD, & rank);
-    //MPI_Comm_size(MPI_COMM_WORLD, & nRanks);
-    
-    std::stringstream s;
-    s << basename << ".out"  ;
-
-    filename = s.str();
 
 }
 
-
-
 void posix_io::write( distributedCartesianArray & data) const
 {
-    auto f = posix::open( filename.c_str(), O_WRONLY | O_CREAT );
+    auto f = posix::open( filename.c_str(), O_WRONLY | O_CREAT,0666 );
 
 
     posix::lseek( f, data.getLocalOffset()[0]*sizeof(real_t), SEEK_SET );

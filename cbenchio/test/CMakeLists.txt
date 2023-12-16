@@ -34,4 +34,10 @@ add_parallel_test( test_posix_io 1)
 add_parallel_test( test_posix_io 13)
 add_parallel_test( test_posix_io 2)
 
+add_test_executable( test_mpiio)
+add_parallel_test( test_mpiio 1)
+add_parallel_test( test_mpiio 2)
+add_parallel_test( test_mpiio 4)
+
+#add_test_executable( test_hdf5)
 

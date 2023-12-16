@@ -23,7 +23,7 @@ int main(int argc, char ** argv)
 
     auto comm=MPI_COMM_WORLD;
     auto shape = config["benchmark"]["shape"].as<std::array<int,3> >();
-    std::string basename = "data";
+    std::string basename = "data.out";
 
         
     if (api == "posix")
@@ -34,7 +34,7 @@ int main(int argc, char ** argv)
         {
             comm=MPI_COMM_SELF;
             shape[0]/=nRanks;
-            basename="data" + std::to_string(rank);
+            basename="data" + std::to_string(rank) + ".out";
         }   
         
 
