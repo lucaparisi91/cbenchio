@@ -6,16 +6,14 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 #include "../src/mpi_io.h"
 #include "tools.h"
-#include "hdf5.h"
+#include "../src/hdf5_io.h"
+
 
 
 int main(int argc, char ** argv)
 {
-    const std::array<int,3> globalShape { 100,100, 1};
+    const std::array<int,3> globalShape { 10,5, 1};
 
-    
-
-   
     int rank=-1, nRanks=-1;
 
     MPI_Init( &argc , & argv);
@@ -30,9 +28,28 @@ int main(int argc, char ** argv)
 
     gen.generate(data1);
 
-    file_id = H5Fcreate("data.out", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    
+    hdf5_io writer, reader,writer2;
+
+    writer.open("data.hdf5",data1,benchio::writeMode);
+    
+    writer.write(data1);
+
+    writer.close();
+
+    reader.open("data.hdf5",data1,benchio::readMode);
+    
+    reader.read(data1);
+
+    reader.close();
 
 
-    MPI_Finalize();
+   real_t dis= Eigen::Tensor<real_t,0>((data2.getData() - data1.getData()).abs().sum())();
+
+   std::cout << dis << std::endl;
+
+   testing::check_near( dis, 0 , "Distance btw. read and write " );
+
+   MPI_Finalize();
 
 }

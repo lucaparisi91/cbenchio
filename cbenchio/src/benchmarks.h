@@ -1,7 +1,7 @@
 #include "data.h"
 #include "posix_io.h"
 #include "timers.h"
-
+#include <memory>
 
 class benchmark
 {

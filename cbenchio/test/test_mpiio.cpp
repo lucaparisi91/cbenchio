@@ -10,9 +10,6 @@
 int main(int argc, char ** argv)
 {
     const std::array<int,3> globalShape { 100,100, 1};
-
-    
-
    
     int rank=-1, nRanks=-1;
 
@@ -29,21 +26,21 @@ int main(int argc, char ** argv)
     gen.generate(data1);
     
     
-   mpi_io writer( "data.out");
-
+   mpi_io writer;
+   writer.open("data.out",data1,benchio::writeMode);
    writer.write( data1);
+   writer.close();
 
-   mpi_io reader( "data.out");
 
+   mpi_io reader;
+   reader.open("data.out",data2,benchio::readMode);
    reader.read( data2);
-   
+   reader.close();
 
 
     real_t diff = ((Eigen::Tensor<real_t,0>)((data1.getData() - data2.getData()).abs().sum() ))();
 
     testing::check_near( diff, 0, "Data distance");
-
-
 
 
     MPI_Finalize();

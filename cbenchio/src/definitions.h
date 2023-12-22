@@ -3,5 +3,10 @@
 
 using real_t = double ;
 
+namespace benchio
+{
+    enum openMode { readMode, writeMode};
+};
+
 
 #endif

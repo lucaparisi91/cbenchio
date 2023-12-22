@@ -17,7 +17,7 @@ class posix_io
     void write( distributedCartesianArray & data) const;
 
     void read( distributedCartesianArray & data);
-
+    
 
     private:
 
