@@ -26,37 +26,22 @@ int main(int argc, char ** argv)
     gen.generate(data);
 
 
-    // vectorDataGenerator randVecGen(MPI_COMM_WORLD,globalDataSize);
 
-    // auto data = randVecGen.generate();
-
-    auto writer = posix_io("data.out" );
+    posix_io ioCtl;
 
     timer writeTime;
     timer readTime;
-
-    writer.write(data);
-
-
-    //writeTime.computeMaxElapsed();
-
-    //std::cout << data.getGlobalSize()
-    
-    // if (rank == 0)
-    // {
-    //     auto globalDataSizeGB = randVecGen.getGlobalSize() / 1.e+9;
-    //     std::cout << "Data Size: " << globalDataSizeGB << "GB" << std::endl;
-    //     std::cout << "N. ranks: " << nRanks << std::endl;
-    //     std::cout << "BW: " << globalDataSizeGB/writeTime.maxElapsed()  << " GB/s" << std::endl;
-
-    // }
-
-    // std::vector<real_t> data2;
+    ioCtl.open("data.out",data,benchio::writeMode);
+    ioCtl.write(data);
 
     distributedCartesianArray data2(MPI_COMM_WORLD, { 100, 1, 1  });
 
-    MPI_Barrier(MPI_COMM_WORLD);
-    writer.read(data2);
+    ioCtl.close();
+    ioCtl.open("data.out",data,benchio::readMode);
+    
+    ioCtl.read(data2);
+    ioCtl.close();
+    
     
 
     real_t diff_local = (Eigen::Tensor<real_t,0>((data2.getData() - data.getData() ).abs().sum()))();  

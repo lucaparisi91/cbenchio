@@ -8,21 +8,28 @@
 #include "data.h"
 
 
+
+
 class posix_io
 {
     public:
 
-    posix_io(std::string basename);
+
+    void open(std::string filename, distributedCartesianArray & data, benchio::openMode mode );
+
 
     void write( distributedCartesianArray & data) const;
 
     void read( distributedCartesianArray & data);
     
+    void close();
+
 
     private:
 
-    std::string filename;
     int rank,nRanks;
+
+    int f; // file descriptor
 };
 
 
