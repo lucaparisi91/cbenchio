@@ -1,8 +1,10 @@
 #include <string>
 #include "data.h"
 #include "hdf5.h"
+#include "ctl_io.h"
 
-class hdf5_io
+
+class hdf5_io : public ctl_io
 {
     public:
 

@@ -6,6 +6,9 @@
 #include <iostream>
 #include "benchmarks.h"
 #include "yaml-cpp/yaml.h"
+#include "mpi_io.h"
+#include "hdf5_io.h"
+
 
 auto createData( const YAML::Node & benchmark)
 {
@@ -59,12 +62,20 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
 {
     auto api = benchmark["API"].as<std::string>();
 
-    if ( api == "POSIX" )
+    if ( api == "posix" )
     {
         return std::make_shared<posix_io>();
         
     }
-    else 
+    else  if (api == "mpi")
+    {
+        return std::make_shared<mpi_io>();
+    }
+    else  if (api == "hdf5")
+    {
+        return std::make_shared<hdf5_io>();
+    }
+    else
     {
         throw std::invalid_argument(std::string("api not known: ") + api);
     }

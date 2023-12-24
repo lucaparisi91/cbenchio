@@ -1,6 +1,9 @@
 #include <string>
 #include "data.h"
-class mpi_io
+#include "ctl_io.h"
+
+
+class mpi_io : public ctl_io
 {
     public:
 
