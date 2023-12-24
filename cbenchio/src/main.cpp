@@ -55,6 +55,20 @@ std::string createFileName( const YAML::Node & benchmark)
     }
 }
 
+std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
+{
+    auto api = benchmark["API"].as<std::string>();
+
+    if ( api == "POSIX" )
+    {
+        return std::make_shared<posix_io>();
+        
+    }
+    else 
+    {
+        throw std::invalid_argument(std::string("api not known: ") + api);
+    }
+}
 
 int main(int argc, char ** argv)
 {
@@ -68,10 +82,9 @@ int main(int argc, char ** argv)
     YAML::Node config = YAML::LoadFile("config.yaml");
 
 
-    auto api = config["benchmark"]["API"].as<std::string>();
 
    
-    std::string basename = getFileName(config["benchmark"]);
+    std::string basename = createFileName(config["benchmark"]);
 
 
     auto data= createData(config["benchmark"]);
@@ -87,18 +100,18 @@ int main(int argc, char ** argv)
     gen.generate(data); 
 
 
-    posix_io writer;
+    
+    auto writer = createWriter(config["benchmark"]);
 
-
-    writer.open(basename,data,benchio::writeMode);
+    writer->open(basename,data,benchio::writeMode);
     benchmark current_benchmark("posix");
 
 
     if (rank==0) std::cout << "Start benchmarking..." << std::endl;
     
-    current_benchmark.write(data, writer);
+    current_benchmark.write(data, *writer);
 
-    writer.close();
+    writer->close();
 
 
 

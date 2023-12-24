@@ -7,22 +7,35 @@
 #include <vector>
 #include "data.h"
 
+class ctl_io
+{
+    public:
+
+    virtual void open(std::string filename, distributedCartesianArray & data, benchio::openMode mode )=0;
 
 
+    virtual void write( distributedCartesianArray & data) const = 0;
 
-class posix_io
+    virtual void read( distributedCartesianArray & data) const = 0;
+    
+    virtual void close()=0;
+
+};
+
+
+class posix_io : public ctl_io
 {
     public:
 
 
-    void open(std::string filename, distributedCartesianArray & data, benchio::openMode mode );
+    virtual void open(std::string filename, distributedCartesianArray & data, benchio::openMode mode );
 
 
-    void write( distributedCartesianArray & data) const;
+    virtual void write( distributedCartesianArray & data) const;
 
-    void read( distributedCartesianArray & data);
+    virtual void read( distributedCartesianArray & data) const;
     
-    void close();
+    virtual void close();
 
 
     private:

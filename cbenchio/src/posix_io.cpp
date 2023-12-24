@@ -56,7 +56,7 @@ void posix_io::close()
 
 }
 
-void posix_io::read( distributedCartesianArray & data)
+void posix_io::read( distributedCartesianArray & data) const
 {
     
     //auto f = posix::open( filename.c_str(), O_RDONLY );

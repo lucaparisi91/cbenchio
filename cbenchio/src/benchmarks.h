@@ -7,7 +7,7 @@ class benchmark
 {
     public:
     using data_t = distributedCartesianArray;
-    using ioCtl_t = posix_io;
+    using ioCtl_t = ctl_io;
 
     benchmark(  std::string name_) : name(name_),sizeTransferred(0) {};
 
