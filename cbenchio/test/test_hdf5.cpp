@@ -27,19 +27,16 @@ int main(int argc, char ** argv)
     indexDataGenerator gen;
 
     gen.generate(data1);
-
     
-    hdf5_io writer, reader,writer2;
-
+    hdf5_io writer, reader;
     writer.open("data.hdf5",data1,benchio::writeMode);
-    
     writer.write(data1);
-
     writer.close();
 
-    reader.open("data.hdf5",data1,benchio::readMode);
+
+    reader.open("/work/z19/z19/lparisi/courses/io/io_webinar/build/data.hdf5",data2,benchio::readMode);
     
-    reader.read(data1);
+    reader.read(data2);
 
     reader.close();
 

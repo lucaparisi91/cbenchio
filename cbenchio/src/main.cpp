@@ -8,7 +8,7 @@
 #include "yaml-cpp/yaml.h"
 #include "mpi_io.h"
 #include "hdf5_io.h"
-
+#include <filesystem>
 
 auto createData( const YAML::Node & benchmark)
 {
@@ -48,14 +48,19 @@ std::string createFileName( const YAML::Node & benchmark)
 
 
     auto filePerProcess = benchmark["filePerProcess"].as<bool>();
+
+    auto filePath=std::filesystem::path(benchmark["path"].as<std::string>("."));
+
     if ( filePerProcess)
     {
-        return "data" + std::to_string(rank) + ".out";
+        filePath/= ("data" + std::to_string(rank) + ".out");
     }
     else 
     {
-        return "data.out";
+        filePath/= "data.out";
     }
+
+    return filePath;
 }
 
 std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
@@ -69,7 +74,13 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
     }
     else  if (api == "mpi")
     {
-        return std::make_shared<mpi_io>();
+        auto writer = std::make_shared<mpi_io>();
+
+        if (benchmark["isCollective"].as<bool>(true) == false )
+        {
+            writer->unSetCollective();
+        }    
+        return writer;
     }
     else  if (api == "hdf5")
     {

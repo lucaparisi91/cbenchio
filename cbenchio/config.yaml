@@ -1,6 +1,7 @@
-# All size units are in GB 
+# All size units are in GB
 
 benchmark:
-  API: "posix" # Only supports 1D array
-  filePerProcess: True # If false all processes will write to a single shared file
-  shape: [1000000000,1,1] 
+  API: "posix" # One of hdf5, posix or mpio
+  filePerProcess: false # If false all processes will write to a single shared file
+  shape: [100000000,1,1]
+  path: "dataDir"

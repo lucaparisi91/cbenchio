@@ -7,8 +7,7 @@
 class hdf5_io : public ctl_io
 {
     public:
-
-
+    
     void write( distributedCartesianArray & data) const;
 
     void read( distributedCartesianArray & data) const;
@@ -17,10 +16,14 @@ class hdf5_io : public ctl_io
 
     void close();
 
-    private:
-    bool writeMode=true;
+    void setIsCollective() { isCollective=true;}
 
-    hid_t fileId,dsetId,fileSpaceId,memSpaceId,pListId;
+    void unSetIsCollective(){ isCollective=false;}
+
+    private:
+
+    bool isCollective=true;
+    hid_t fileId,dsetId,fileSpaceId,memSpaceId,pListTransfer;
 
     
 };

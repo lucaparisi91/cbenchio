@@ -6,7 +6,7 @@
 class mpi_io : public ctl_io
 {
     public:
-
+    
 
     void write( distributedCartesianArray & data) const;
 
@@ -16,6 +16,9 @@ class mpi_io : public ctl_io
 
     void close();
 
+    void setCollective() { isCollective=true;}
+    void unSetCollective(){isCollective=false;}
+
     private:
 
     std::string basename;
@@ -24,6 +27,6 @@ class mpi_io : public ctl_io
 
     MPI_File fh;    
     MPI_Datatype subArrayDataType;
-
+    bool isCollective=true;
 
 };
