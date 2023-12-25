@@ -15,7 +15,6 @@ namespace posix
 
 }
 
-
 auto getPosixMode( benchio::openMode mode)
 {
     if ( mode == benchio::writeMode)
@@ -44,9 +43,7 @@ void posix_io::open(std::string filename, distributedCartesianArray & data, benc
 };
 
 void posix_io::write( distributedCartesianArray & data) const
-{
-
-   
+{  
     posix::write(f, (const char *)data.getData().data(), data.getLocalSize()*sizeof(real_t));
 }
 
@@ -58,15 +55,7 @@ void posix_io::close()
 
 void posix_io::read( distributedCartesianArray & data) const
 {
-    
-    //auto f = posix::open( filename.c_str(), O_RDONLY );
-
-    //posix::lseek( f, data.getLocalOffset()[0]*sizeof(real_t), SEEK_SET );
     posix::read(f, (char *)data.getData().data(), data.getLocalSize()*sizeof(real_t));
-
-    //posix::close(f);
-
-   
 }
 
 

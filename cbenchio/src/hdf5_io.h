@@ -16,9 +16,9 @@ class hdf5_io : public ctl_io
 
     void close();
 
-    void setIsCollective() { isCollective=true;}
+    void setCollective() { isCollective=true;}
 
-    void unSetIsCollective(){ isCollective=false;}
+    void unSetCollective(){ isCollective=false;}
 
     private:
 

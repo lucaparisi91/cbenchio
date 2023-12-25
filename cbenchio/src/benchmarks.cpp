@@ -4,7 +4,7 @@
 void benchmark::write(data_t & data, ioCtl_t & ctl)
 {
     int rank,nRanks;
-
+    
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
 
@@ -34,8 +34,6 @@ void benchmark::report()
         std::cout << "N. ranks: " << nRanks << std::endl;
         std::cout << "Time: " << benchmarkTimer.maxElapsed()  << " s" << std::endl;
         std::cout << "BW: " << globalDataSizeGB/benchmarkTimer.maxElapsed()  << " GB/s" << std::endl;
-        
-
 
      }
 

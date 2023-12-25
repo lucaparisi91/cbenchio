@@ -10,6 +10,14 @@
 #include "hdf5_io.h"
 #include <filesystem>
 
+auto getName(const YAML::Node & benchmark)
+{
+    std::string default_name = benchmark["API"].as<std::string>();
+
+    return benchmark["name"].as<std::string>(default_name);
+
+}
+
 auto createData( const YAML::Node & benchmark)
 {
     auto comm = MPI_COMM_WORLD;
@@ -19,7 +27,7 @@ auto createData( const YAML::Node & benchmark)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
 
-    auto filePerProcess = benchmark["filePerProcess"].as<bool>();
+    auto filePerProcess = benchmark["filePerProcess"].as<bool>(false);
     if ( filePerProcess)
     {
         comm=MPI_COMM_SELF;
@@ -47,7 +55,7 @@ std::string createFileName( const YAML::Node & benchmark)
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
 
 
-    auto filePerProcess = benchmark["filePerProcess"].as<bool>();
+    auto filePerProcess = benchmark["filePerProcess"].as<bool>(false);
 
     auto filePath=std::filesystem::path(benchmark["path"].as<std::string>("."));
 
@@ -84,7 +92,12 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
     }
     else  if (api == "hdf5")
     {
-        return std::make_shared<hdf5_io>();
+        auto writer=std::make_shared<hdf5_io>();
+        if (benchmark["isCollective"].as<bool>(true) == false )
+        {
+            writer->unSetCollective();
+        }
+        return writer;
     }
     else
     {
@@ -104,40 +117,49 @@ int main(int argc, char ** argv)
     YAML::Node config = YAML::LoadFile("config.yaml");
 
 
-
-   
-    std::string basename = createFileName(config["benchmark"]);
-
-
-    auto data= createData(config["benchmark"]);
-
-
-
-    indexDataGenerator gen;
-    if (rank==0)
+    for ( const auto node : config)
     {
-        std::cout << "Start generating data..."<<std::endl;
+        auto benchmarkNode=node["benchmark"];
+
+
+        std::string basename = createFileName(benchmarkNode);
+        auto data= createData(benchmarkNode);
+        auto name = getName(benchmarkNode);
+        
+        indexDataGenerator gen;
+        if (rank==0)
+        {
+             std::cout << "Name: "<< name <<std::endl;
+
+           
+        }
+        
+        gen.generate(data); 
+
+        auto writer = createWriter(benchmarkNode);
+
+        writer->open(basename,data,benchio::writeMode);
+
+        
+        benchmark current_benchmark( name  );
+
+        if (rank==0) {
+            std::cout << "---------------------" <<std::endl;
+        }
+
+        current_benchmark.write(data, *writer);
+
+        writer->close();
+
+        current_benchmark.report();
+
     }
     
-    gen.generate(data); 
-
+   
+    
 
     
-    auto writer = createWriter(config["benchmark"]);
-
-    writer->open(basename,data,benchio::writeMode);
-    benchmark current_benchmark("posix");
-
-
-    if (rank==0) std::cout << "Start benchmarking..." << std::endl;
     
-    current_benchmark.write(data, *writer);
-
-    writer->close();
-
-
-
-    current_benchmark.report();
 
     
 

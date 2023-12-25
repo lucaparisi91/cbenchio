@@ -2,11 +2,11 @@
 #include "hdf5.h"
 #include <stdexcept>
 
+
 auto to_hsize(std::array<int,3> dims)
 {
     return std::array<hsize_t,3> { (hsize_t)dims[0] , (hsize_t)dims[1], (hsize_t) dims[2] };
 }
-
 
 void hdf5_io::close( )
 {
@@ -15,7 +15,7 @@ void hdf5_io::close( )
     H5Sclose(memSpaceId);
     H5Fclose(fileId);
     H5Pclose(pListTransfer);
-
+    
 }
 
 void hdf5_io::open( std::string filename,  distributedCartesianArray & data, benchio::openMode mode)
