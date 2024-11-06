@@ -19,7 +19,6 @@ An example configuration file can found in config.yaml .
     - If false write to a single file. Otherwise write to multiple file
 - shape: array int of length 3
     - Shape of the 3D array to write to memory
-
-
-
-
+- processorGid: array of 3 integers, default [0,0,0]
+    - Processor grid size
+    
