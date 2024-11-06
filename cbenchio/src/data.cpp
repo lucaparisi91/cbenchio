@@ -33,14 +33,14 @@ distributedVector::distributedVector( MPI_Comm comm_,size_t globalSize_ ) : comm
 
 
 
-distributedCartesianArray::distributedCartesianArray( MPI_Comm comm,std::array<index_t,3> globalShape_ )
+distributedCartesianArray::distributedCartesianArray( MPI_Comm comm_,std::array<index_t,3> globalShape_ ,std::array<int, 3> processorGrid ) : comm(comm_)
 {
 
     globalShape=globalShape_;
     int rank=-1, nRanks=-1;
 
     nDimensions=3;
-    std::array<int,3 > dims{0,0,0};
+    std::array<int,3 > dims = processorGrid;
 
 
     if ( globalShape[2] == 1 )
@@ -75,7 +75,6 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm,std::array<i
     
 
 
-    std::array<int,3> rankCartesian,period,nRanksCartesian;
 
     MPI_Cart_get( cartesian_comm, 3 , nRanksCartesian.begin() , period.begin() , rankCartesian.begin() );
 
@@ -107,7 +106,39 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm,std::array<i
     }
 
     localSize=localShape[0] * localShape[1] * localShape[2] ;
+    
+    localData.resize( { (long signed int)localShape[0] , (long signed int)localShape[1],(long signed int)localShape[2] });
 
-    localData.resize( { localShape[0] , localShape[1],localShape[2] });
+    
+}
+
+void distributedCartesianArray::print() const
+{
+    int rank,nRanks;
+
+    MPI_Comm_rank( comm, & rank);
+    MPI_Comm_size( comm, & nRanks);
+    if (rank == 0)
+    {
+        std::cout << "Array grid: " << globalShape[0] << " " << globalShape[1] << " " << globalShape[2] << std::endl;
+        std::cout << "Processor grid: " << nRanksCartesian[0] << " " << nRanksCartesian[1] << " " << nRanksCartesian[2 ] << std::endl;
+    }
+
+    // for (int i=0; i< nRanks;i++)
+    // {
+
+    //     if (i==rank)
+    //     {
+    //         std::cout << "Rank: " << rank ;
+    //         std::cout << ", Local Offset: " << localOffset[0] << " " << localOffset[1] << " " << localOffset[2] ;
+    //         std::cout << ", Local Shape: " << localShape[0] << " " << localShape[1] << " " << localShape[2] << std::endl;   
+    //     }
+
+    //     MPI_Barrier(comm);
+
+    // }
+
+    
+    
 
 }

@@ -60,10 +60,10 @@ class distributedCartesianArray
 {
     public:
 
-    using index_t = int;
+    using index_t = size_t;
     static constexpr int max_dims = 3;
-
-    distributedCartesianArray( MPI_Comm comm,std::array<index_t,3> globalShape_  );
+    
+    distributedCartesianArray( MPI_Comm comm_,std::array<index_t,3> globalShape_  , std::array<int, 3> processorGrid = {0,0,0} );
 
     const auto & getLocalShape() const { return localShape;}
     const auto & getGlobalShape() const { return globalShape;}
@@ -78,6 +78,8 @@ class distributedCartesianArray
     auto getCartesianCommunicator() {return cartesian_comm;}
     
     auto getNDimensions() const { return nDimensions;}
+
+    void print() const ;
     private:
 
     
@@ -88,9 +90,12 @@ class distributedCartesianArray
     
     std::array<index_t,max_dims> localOffset;
     MPI_Comm cartesian_comm;
+    MPI_Comm comm;
 
     index_t localSize;
     index_t globalSize;
+
+    std::array<int,3> rankCartesian,period,nRanksCartesian;
 
     int nDimensions;
 

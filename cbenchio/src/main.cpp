@@ -7,8 +7,10 @@
 #include "benchmarks.h"
 #include "yaml-cpp/yaml.h"
 #include "mpi_io.h"
+#include "std_io.h"
 #include "hdf5_io.h"
 #include <filesystem>
+#include <fstream>
 
 auto getName(const YAML::Node & benchmark)
 {
@@ -34,20 +36,20 @@ auto createData( const YAML::Node & benchmark)
     }
 
 
-    auto shape = benchmark["shape"].as<std::array<int,3> >();
-
+    auto shape = benchmark["shape"].as<std::array<size_t,3> >();
+    auto processorGrid = benchmark["processorGrid"].as<std::array<int,3> >(std::array<int,3>{0,0,0});
+    
     if (filePerProcess)
     {
         comm=MPI_COMM_SELF;
     }
 
-
-    distributedCartesianArray data(comm, shape);
+    distributedCartesianArray data(comm, shape,processorGrid);
     return data;
 
 };
 
-std::string createFileName( const YAML::Node & benchmark)
+std::vector<std::string> createFileNames( const YAML::Node & benchmark)
 {
     int rank=-1, nRanks=-1;
     
@@ -56,19 +58,26 @@ std::string createFileName( const YAML::Node & benchmark)
 
 
     auto filePerProcess = benchmark["filePerProcess"].as<bool>(false);
+    std::vector<std::string> filenames;
 
-    auto filePath=std::filesystem::path(benchmark["path"].as<std::string>("."));
-
-    if ( filePerProcess)
+    for ( auto pathItem : benchmark["paths"] )
     {
-        filePath/= ("data" + std::to_string(rank) + ".out");
-    }
-    else 
-    {
-        filePath/= "data.out";
+        auto filePath=std::filesystem::path(pathItem.as<std::string>("."));
+
+        if ( filePerProcess)
+        {
+            filePath/= ("data" + std::to_string(rank) + ".out");
+        }
+        else 
+        {
+            filePath/= "data.out";
+        }
+
+        filenames.push_back(filePath);
     }
 
-    return filePath;
+    return filenames;
+    
 }
 
 std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
@@ -77,8 +86,21 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
 
     if ( api == "posix" )
     {
-        return std::make_shared<posix_io>();
+        auto writer=  std::make_shared<posix_io>();
+        auto aligment = benchmark["aligment"].as<size_t>( 0 );
+        writer->setAligment(aligment);
         
+
+        return writer;
+
+    }
+    else if ( api == "stdio" )
+    {
+        auto writer=  std::make_shared<std_io>();
+        
+
+        return writer;
+
     }
     else  if (api == "mpi")
     {
@@ -116,53 +138,72 @@ int main(int argc, char ** argv)
 
     YAML::Node config = YAML::LoadFile("config.yaml");
 
+    YAML::Node configOut;
 
-    for ( const auto node : config)
+    for ( const auto node : config["benchmarks"])
     {
-        auto benchmarkNode=node["benchmark"];
+        auto benchmarkNode=node;
 
 
-        std::string basename = createFileName(benchmarkNode);
+        auto basenames = createFileNames(benchmarkNode);
         auto data= createData(benchmarkNode);
-        auto name = getName(benchmarkNode);
+
+        data.print();
         
+        auto name = getName(benchmarkNode);
+        auto repeat = benchmarkNode["repeat"].as<int>(1);
         indexDataGenerator gen;
         if (rank==0)
         {
-             std::cout << "Name: "<< name <<std::endl;
+            std::cout << "Name: "<< name <<std::endl;
 
-           
         }
         
-        gen.generate(data); 
-
-        auto writer = createWriter(benchmarkNode);
-
-        writer->open(basename,data,benchio::writeMode);
-
         
-        benchmark current_benchmark( name  );
 
-        if (rank==0) {
-            std::cout << "---------------------" <<std::endl;
+        for (int i=0;i<repeat;i++)
+        {
+            for ( auto basename : basenames)
+                {
+
+                    gen.generate(data);
+                                    
+                    auto writer = createWriter(benchmarkNode);
+
+                    writer->open(basename,data,benchio::writeMode);
+
+                    benchmark current_benchmark( name  );
+
+                    if (rank==0) {
+                        std::cout << "---------------------" <<std::endl;
+                    }
+
+                    current_benchmark.write(data, *writer);
+
+                    writer->close();
+
+                    auto response = current_benchmark.report_yaml() ;
+
+                    if ( rank ==0)
+                    {
+                        std::cout << response << std::endl;
+                        benchmarkNode["results"].push_back(response);
+                        
+                    }
+            }
+            
         }
-
-        current_benchmark.write(data, *writer);
-
-        writer->close();
-
-        current_benchmark.report();
+        configOut["benchmarks"].push_back(benchmarkNode);
 
     }
-    
-   
-    
 
-    
-    
-
-    
-
+    if ( rank ==0 )
+    {
+        std::ofstream f;
+        f.open("report.yaml");
+        f << configOut;
+        f.close();
+    }
 
     MPI_Finalize();
 

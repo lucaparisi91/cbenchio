@@ -12,7 +12,7 @@
 
 int main(int argc, char ** argv)
 {
-    const std::array<int,3> globalShape { 10,5, 1};
+    const std::array<size_t,3> globalShape { 10,5, 1};
 
     int rank=-1, nRanks=-1;
 
@@ -34,7 +34,7 @@ int main(int argc, char ** argv)
     writer.close();
 
 
-    reader.open("/work/z19/z19/lparisi/courses/io/io_webinar/build/data.hdf5",data2,benchio::readMode);
+    reader.open("data.hdf5",data2,benchio::readMode);
     
     reader.read(data2);
 
@@ -42,7 +42,7 @@ int main(int argc, char ** argv)
 
 
    real_t dis= Eigen::Tensor<real_t,0>((data2.getData() - data1.getData()).abs().sum())();
-
+   
    std::cout << dis << std::endl;
 
    testing::check_near( dis, 0 , "Distance btw. read and write " );

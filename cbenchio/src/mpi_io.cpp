@@ -1,12 +1,19 @@
 #include "mpi_io.h"
+#include "tools.h"
+#include <iostream>
+
 
 void mpi_io::initFileDataType( distributedCartesianArray & data, MPI_Datatype & subArrayDataType ) const
 {
-    MPI_Type_create_subarray( 3, data.getGlobalShape().begin(), data.getLocalShape().begin() , data.getLocalOffset().begin(), MPI_ORDER_FORTRAN ,MPI_DOUBLE, &subArrayDataType );
+    auto globalShapeInt= toInt(data.getGlobalShape());
+    auto localShapeInt = toInt(data.getLocalShape());
+    auto localOffsetInt= toInt(data.getLocalOffset());
+
+    MPI_Type_create_subarray( 3, globalShapeInt.begin(), localShapeInt.begin() , localOffsetInt.begin(), MPI_ORDER_FORTRAN ,MPI_DOUBLE, &subArrayDataType );
     MPI_Type_commit( &subArrayDataType);
 }
 
-void mpi_io::finalizeFileDataType(  MPI_Datatype & subArrayDataType ) const
+void mpi_io::finalizeFileDataType(  MPI_Datatype & subArrayDataType ) const 
 {
     
     MPI_Type_free( &subArrayDataType);
@@ -43,7 +50,7 @@ void mpi_io::open(std::string filename, distributedCartesianArray & data, benchi
 
 }
 
-void mpi_io::read( distributedCartesianArray & data) const
+void mpi_io::read( distributedCartesianArray & data) 
 {
     //MPI_Offset disp=0;
 
@@ -65,7 +72,7 @@ void mpi_io::close()
     finalizeFileDataType(subArrayDataType);
 }
 
-void mpi_io::write( distributedCartesianArray & data) const
+void mpi_io::write( distributedCartesianArray & data) 
 {
     
     if (isCollective)

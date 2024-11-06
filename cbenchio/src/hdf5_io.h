@@ -8,9 +8,9 @@ class hdf5_io : public ctl_io
 {
     public:
     
-    void write( distributedCartesianArray & data) const;
+    void write( distributedCartesianArray & data) ;
 
-    void read( distributedCartesianArray & data) const;
+    void read( distributedCartesianArray & data) ;
     
     void open( std::string filename,  distributedCartesianArray & data, benchio::openMode mode) ;
 

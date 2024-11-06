@@ -1,3 +1,5 @@
+#ifndef TOOLS_TEST_H
+#define TOOLS_TEST_H
 
 namespace testing
 {
@@ -22,12 +24,14 @@ namespace testing
     template<class T1,class T2>
     void check_near( T1 a, T2 b   , std::string usrMsg = "",real_t tol=1e-7)
     {
-        auto cond = std::abs( a -b ) < tol;
+        auto cond = std::abs( (double)(a -b) ) < tol;
         std::stringstream ss;
         ss << usrMsg << std::endl;
         if (!cond) ss << a << " differ from " << b << std::endl; 
-        check( std::abs( a -b ) < tol ,ss.str() );
+        check( std::abs( (double)(a -b) ) < tol ,ss.str() );
     }
+
+    
 
     template<class T>
     void check_near( std::array<T,3> a, std::array<T,3> b   , std::string usrMsg = "",real_t tol=1e-7)
@@ -48,3 +52,7 @@ namespace testing
     }
 
 }
+
+
+
+#endif

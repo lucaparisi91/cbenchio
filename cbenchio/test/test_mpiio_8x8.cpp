@@ -9,7 +9,7 @@
 
 int main(int argc, char ** argv)
 {
-    const std::array<size_t,3> globalShape { 100,100, 1};
+    const std::array<size_t,3> globalShape { 160000,160000, 1};
    
     int rank=-1, nRanks=-1;
 
@@ -17,9 +17,10 @@ int main(int argc, char ** argv)
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
-
-    distributedCartesianArray data1(MPI_COMM_WORLD,globalShape);
-    distributedCartesianArray data2(MPI_COMM_WORLD,globalShape);
+    
+    distributedCartesianArray data1(MPI_COMM_WORLD,globalShape, {8,8,1});
+    
+    distributedCartesianArray data2(MPI_COMM_WORLD,globalShape, {8,8,1});
     
     indexDataGenerator gen;
 
@@ -28,6 +29,8 @@ int main(int argc, char ** argv)
     
    mpi_io writer;
    writer.open("data.out",data1,benchio::writeMode);
+   writer.setCollective();
+
    writer.write( data1);
    writer.close();
 

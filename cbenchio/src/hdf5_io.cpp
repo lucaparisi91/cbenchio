@@ -2,11 +2,12 @@
 #include "hdf5.h"
 #include <stdexcept>
 
-
-auto to_hsize(std::array<int,3> dims)
+template<class T>
+auto to_hsize(std::array<T,3> dims)
 {
     return std::array<hsize_t,3> { (hsize_t)dims[0] , (hsize_t)dims[1], (hsize_t) dims[2] };
 }
+
 
 void hdf5_io::close( )
 {
@@ -79,13 +80,13 @@ void hdf5_io::open( std::string filename,  distributedCartesianArray & data, ben
     
 }
 
-void hdf5_io::write( distributedCartesianArray & data) const
+void hdf5_io::write( distributedCartesianArray & data) 
 {   
     auto status = H5Dwrite(dsetId, H5T_NATIVE_DOUBLE, memSpaceId, fileSpaceId, pListTransfer, data.getData().data() );
 
 }
 
-void hdf5_io::read( distributedCartesianArray & data) const
+void hdf5_io::read( distributedCartesianArray & data)
 {   
     auto status = H5Dread(dsetId, H5T_NATIVE_DOUBLE, memSpaceId, fileSpaceId, pListTransfer, data.getData().data() );
 

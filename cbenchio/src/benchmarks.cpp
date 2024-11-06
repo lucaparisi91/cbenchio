@@ -1,5 +1,7 @@
 #include "benchmarks.h"
 #include <iostream>
+#include <sstream>
+
 
 void benchmark::write(data_t & data, ioCtl_t & ctl)
 {
@@ -18,7 +20,7 @@ void benchmark::write(data_t & data, ioCtl_t & ctl)
     
 }
 
-void benchmark::report()
+std::string benchmark::report()
 {
     int rank,nRanks;
 
@@ -26,16 +28,42 @@ void benchmark::report()
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
 
     benchmarkTimer.computeMaxElapsed();
+    std::stringstream ss;
 
     if (rank == 0)
     {
         auto globalDataSizeGB = sizeTransferred*sizeof(real_t) / 1.e+9;
-        std::cout << "Data Size: " << globalDataSizeGB << "GB" << std::endl;
-        std::cout << "N. ranks: " << nRanks << std::endl;
-        std::cout << "Time: " << benchmarkTimer.maxElapsed()  << " s" << std::endl;
-        std::cout << "BW: " << globalDataSizeGB/benchmarkTimer.maxElapsed()  << " GB/s" << std::endl;
+        ss  << "Data Size: " << globalDataSizeGB << "GB" << std::endl;
+        ss << "N. ranks: " << nRanks << std::endl;
+        ss << "Time: " << benchmarkTimer.maxElapsed()  << " s" << std::endl;
+        ss << "BW: " << globalDataSizeGB/benchmarkTimer.maxElapsed()  << " GB/s" << std::endl;
 
-     }
+    }
 
+    return ss.str();
     
+}
+
+YAML::Node benchmark::report_yaml()
+{
+    YAML::Node report;
+
+    int rank,nRanks;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
+
+    benchmarkTimer.computeMaxElapsed();
+    std::stringstream ss;
+
+    if (rank == 0)
+    {
+        auto globalDataSizeGB = sizeTransferred*sizeof(real_t) / 1.e+9;
+        report["dataSize"] =globalDataSizeGB ;
+        report["time"]=benchmarkTimer.maxElapsed();
+        report["bandwidth"]=globalDataSizeGB/benchmarkTimer.maxElapsed();
+        report["nRanks"]=nRanks;
+
+    }
+    return report;
 }

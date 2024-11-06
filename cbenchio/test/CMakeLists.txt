@@ -9,8 +9,10 @@ function ( add_test_executable name_test )
 endfunction()
 
 function ( add_parallel_test name_exec nRanks )
-    add_test( ${name_exec}_n${nRanks} srun --cpus-per-task=1 --tasks=${nRanks} ${name_exec} )
+    add_test( ${name_exec}_n${nRanks} srun --cpus-per-task=1 --ntasks=${nRanks} ${name_exec} )
 endfunction()
+
+
 
 
 
@@ -45,3 +47,9 @@ add_test_executable( test_hdf5)
 add_parallel_test( test_hdf5 1)
 add_parallel_test( test_hdf5 2)
 add_parallel_test( test_hdf5 4)
+
+add_test_executable( test_std_io )
+add_parallel_test( test_std_io 1)
+
+add_test_executable( test_mpiio_8x8 )
+add_parallel_test( test_mpiio_8x8 64)

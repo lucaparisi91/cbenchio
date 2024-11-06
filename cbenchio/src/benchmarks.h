@@ -2,6 +2,7 @@
 #include "posix_io.h"
 #include "timers.h"
 #include <memory>
+#include "yaml-cpp/yaml.h"
 
 class benchmark
 {
@@ -16,8 +17,9 @@ class benchmark
     void write( data_t & data, ioCtl_t & ctl );
 
 
-    void report();
+    std::string report();
 
+    YAML::Node report_yaml();
 
     private:
 

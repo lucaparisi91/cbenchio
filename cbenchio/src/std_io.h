@@ -1,13 +1,16 @@
-#ifndef POSIX_IO_H
-#define POSIX_IO_H
+#ifndef STD_IO_H
+#define STD_IO_H
 
 #include "timers.h"
 #include <string>
 #include <vector>
 #include "data.h"
 #include "ctl_io.h"
+#include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
 
-class posix_io : public ctl_io
+class std_io : public ctl_io
 {
     public:
 
@@ -21,16 +24,12 @@ class posix_io : public ctl_io
     
     virtual void close();
 
-    void setAligment(size_t aligment);
-
 
     private:
 
     int rank,nRanks;
-    bool aligned=false;
-    size_t alignment = 1048576 ;
 
-    int f; // file descriptor
+    FILE * fp ;
 };
 
 
