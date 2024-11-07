@@ -1,0 +1,10 @@
+
+benchmarks:
+    -
+        API: "mpi"
+        filePerProcess: false
+        processorGrid: [10,1,1]
+        shape: [100,100,100]
+        paths: ["dataDir/mpi"]
+        isCollective: true
+        repeat: 1
