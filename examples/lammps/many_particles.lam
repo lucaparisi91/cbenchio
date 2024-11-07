@@ -41,8 +41,9 @@ group all type 1  #(atom type 1 is group 'all')
 ###
 # Dump configurations
 ###
-dump dum1 all custom 10 dump_output.dat id type x y z ix iy iz 
-dump h5md1 all h5md 20 dump_output.hdf5 position image
+dump dum1 all custom 200 dump_output.dat id type x y z ix iy iz 
+dump h5md1 all h5md 200 dump_output.hdf5 position image
+dump netcdfmd1 all netcdf/mpiio 200 dump_output.nc id type x y z
 
 # every 1000 time steps, each atom's id, type, x,y,z coords and x,y,z image flages are output.
 # image flags count how many times each atom has moved through a periodic boundary
@@ -121,4 +122,4 @@ run 10000
 
 
 #### write a final restart file
-write_restart final.restart
+#write_restart final.restart
