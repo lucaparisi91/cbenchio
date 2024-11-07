@@ -6,7 +6,7 @@ module load cmake
 module load eigen
 module load cray-python
 module load cray-hdf5-parallel
-
+module load cray-parallel-netcdf
 
 set -e 
 set -x
@@ -36,6 +36,7 @@ cmake -C $LAMMPS_SOURCE/cmake/presets/most.cmake\
       -D FFTW3_INCLUDE_DIR=${FFTW_INC} \
       -D FFTW3_LIBRARY=${FFTW_DIR}/libfftw3_mpi.so \
       -D PKG_H5MD=yes \
+      -D PKG_NETCDF=yes \
       $LAMMPS_SOURCE/cmake/
 
 VERBOSE=1 make -j 16 
