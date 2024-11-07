@@ -9,7 +9,7 @@
 
 int main(int argc, char ** argv)
 {
-    const std::array<size_t,3> globalShape { 160000,160000, 1};
+    const std::array<size_t,3> globalShape { 160,160, 1};
    
     int rank=-1, nRanks=-1;
 
