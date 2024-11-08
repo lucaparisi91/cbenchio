@@ -3,7 +3,6 @@
 This folder contains several examples to profile with Darshan.
 Look in the folder for instructions on how to run the examples and a list of questions to answer. 
 
-
 # Profiling with Darshan
 
 Load darshan and check in which folder the logs have been saved. 
@@ -36,7 +35,6 @@ You can generate a trace  by using the `darshan-dxt-parser` command.
 ```bash
 darshan-dxt-parser $DARSHAN_LOG_DIR_PATH/lparisi_benchio_id7999586-88755_11-8-32949-14036386306537802543_1.darshan | less
 ```
-
 
 ## Profiling with hpctoolkit
 
@@ -81,6 +79,6 @@ You can view the results by using the hpcviewer tool and opening the database ju
 hpcviewer
 ```
 
-It can be very slow on the login nodes so I suggest installing the client on your local machine.
+It can be very slow on the login nodes so I suggest installing hpcviewer on your local machine.
 
 You can download the software at [https://hpctoolkit.org/download.html](https://hpctoolkit.org/download.html).
