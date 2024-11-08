@@ -76,3 +76,11 @@ hpcprof my_executable_measurements -o my_executable_database
 ```
 
 You can view the results by using the hpcviewer tool and opening the database just generated.
+
+```bash
+hpcviewer
+```
+
+It can be very slow on the login nodes so I suggest installing the client on your local machine.
+
+You can download the software at [https://hpctoolkit.org/download.html](https://hpctoolkit.org/download.html).
