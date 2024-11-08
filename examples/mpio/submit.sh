@@ -24,9 +24,8 @@ module use /work/z19/shared/lparisi/courses/io/modules
 module load darshan/3.4.6
 module load cbenchio
 
-
-# Launch the parallel job
-#   Using 512 MPI processes and 128 MPI processes per node
-#   srun picks up the distribution from the sbatch options
+#export  DARSHAN_DISABLE_SHARED_REDUCTION=1 
+#export DXT_ENABLE_IO_TRACE=1
+#export MPICH_MPIIO_STATS=1
 
 srun --distribution=block:block --hint=nomultithread benchio

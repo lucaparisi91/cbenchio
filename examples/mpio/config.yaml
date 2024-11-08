@@ -7,4 +7,4 @@ benchmarks:
         shape: [1000,1000,1000]
         paths: ["data"]
         isCollective: true
-        repeat: 5
+        repeat: 1

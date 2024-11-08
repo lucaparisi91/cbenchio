@@ -17,3 +17,13 @@ dump netcdfmd1 all netcdf/mpiio 200 dump_output.nc id type x y z
 ```
 
 The above will dump to three files every 200 time steps, a serial text file, a serial hdf5 file and a parallel netcdf file.
+
+
+## Profile with darshan
+
+Use darshan to understand the I/O behaviour of lammps, using both summaries and traces.
+
+- How much time is spent in I/O per file ?
+- Which files are written to in parallel and which in serial ?
+- Try to change the striping . What differences do you see ?
+- What sizes are the read/write operations ? Is the file accessed sequentially or in random order ? 

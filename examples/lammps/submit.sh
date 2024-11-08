@@ -17,11 +17,8 @@ module use /work/z19/shared/lparisi/courses/io/modules
 module load lammps
 module load darshan/3.4.6
 
-export  DARSHAN_DISABLE_SHARED_REDUCTION=1 
-export DXT_ENABLE_IO_TRACE=1
-
-date
-
+#export  DARSHAN_DISABLE_SHARED_REDUCTION=1 
+#export DXT_ENABLE_IO_TRACE=1
 #export MPICH_MPIIO_STATS=1
 
 srun --hint=nomultithread --distribution=block:block lmp -i many_particles.lam
