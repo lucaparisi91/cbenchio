@@ -1,7 +1,6 @@
 # I/O profiling
 
-Goal is to profile several codes of increasing complexity.
-Some material on using Darshan on Archer2 should be produced.
+This repository contains material on profiling an application using Darshan.
 
 # Slides
 
