@@ -23,5 +23,8 @@ export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
 module use /work/z19/shared/lparisi/courses/io/modules
 module load cbenchio-scorep
 
+export SCOREP_MEMORY_RECORDING=true
+export SCOREP_EXPERIMENT_DIRECTORY="scorep-benchio"
+export SCOREP_MPI_MEMORY_RECORDING=true
 
 srun --distribution=block:block --hint=nomultithread benchio
