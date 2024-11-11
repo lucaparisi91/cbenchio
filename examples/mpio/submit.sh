@@ -21,7 +21,7 @@ export OMP_NUM_THREADS=1
 export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
 
 module use /work/z19/shared/lparisi/courses/io/modules
-module load darshan/3.4.6
+#module load darshan/3.4.6
 module load cbenchio
 
 #export  DARSHAN_DISABLE_SHARED_REDUCTION=1 
