@@ -163,12 +163,14 @@ int main(int argc, char ** argv)
 
         }        
 
+        gen.generate(data);
+        
+
         for (int i=0;i<repeat;i++)
         {
             for ( auto basename : basenames)
                 {
 
-                    gen.generate(data);
                                     
                     auto writer = createWriter(benchmarkNode);
 
