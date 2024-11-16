@@ -17,6 +17,8 @@ class mpi_io : public ctl_io
 
     void setCollective() { isCollective=true;}
     void unSetCollective(){isCollective=false;}
+    
+    virtual void sync();
 
     private:
 

@@ -89,3 +89,13 @@ void mpi_io::write( distributedCartesianArray & data)
    // finalizeFileDataType(subArrayDataType);
 
 }
+
+void mpi_io::sync()
+{
+    auto ret = MPI_File_sync(fh);
+    if (ret!=0)
+    {
+        throw std::runtime_error("Could not sync file with MPI.");
+    };
+
+}
