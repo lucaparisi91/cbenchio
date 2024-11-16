@@ -10,9 +10,7 @@ class benchmark
     using data_t = distributedCartesianArray;
     using ioCtl_t = ctl_io;
 
-    benchmark(  std::string name_) : name(name_),sizeTransferred(0) {};
-
-    
+    benchmark(  std::string name_) : name(name_),sizeTransferred(0), sync(false) {};
 
     void write( data_t & data, ioCtl_t & ctl );
 
@@ -21,11 +19,15 @@ class benchmark
 
     YAML::Node report_yaml();
 
+    void setFileSync( bool _sync) { sync = _sync; }
+
+
     private:
 
     std::shared_ptr<ioCtl_t> ioCtrl;
     timer benchmarkTimer;
     std::string name;
     real_t sizeTransferred;
-
+    bool sync;
+    
 };

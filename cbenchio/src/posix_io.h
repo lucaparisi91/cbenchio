@@ -21,6 +21,8 @@ class posix_io : public ctl_io
     
     virtual void close();
 
+    virtual void sync();
+    
     void setAligment(size_t aligment);
 
 

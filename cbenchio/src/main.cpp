@@ -84,12 +84,12 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
 {
     auto api = benchmark["API"].as<std::string>();
 
+    
     if ( api == "posix" )
     {
         auto writer=  std::make_shared<posix_io>();
         auto aligment = benchmark["aligment"].as<size_t>( 0 );
         writer->setAligment(aligment);
-        
 
         return writer;
 
@@ -125,6 +125,8 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
     {
         throw std::invalid_argument(std::string("api not known: ") + api);
     }
+
+
 }
 
 int main(int argc, char ** argv)
@@ -152,14 +154,14 @@ int main(int argc, char ** argv)
         
         auto name = getName(benchmarkNode);
         auto repeat = benchmarkNode["repeat"].as<int>(1);
+        auto sync = benchmarkNode["sync"].as<bool>(false);   
+
         indexDataGenerator gen;
         if (rank==0)
         {
             std::cout << "Name: "<< name <<std::endl;
 
-        }
-        
-        
+        }        
 
         for (int i=0;i<repeat;i++)
         {
@@ -173,6 +175,7 @@ int main(int argc, char ** argv)
                     writer->open(basename,data,benchio::writeMode);
 
                     benchmark current_benchmark( name  );
+                    current_benchmark.setFileSync(sync);
 
                     if (rank==0) {
                         std::cout << "---------------------" <<std::endl;

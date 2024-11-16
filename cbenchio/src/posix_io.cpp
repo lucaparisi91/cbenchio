@@ -89,14 +89,19 @@ void posix_io::close()
 
 }
 
+void posix_io::sync()
+{
+    auto ret = posix::syncfs(f);
+    if (ret != 0)
+    {
+        throw std::runtime_error("Could not sync posix file");
+    };
+    
+}
+
 
 void posix_io::read( distributedCartesianArray & data) 
 {
     posix::read(f, (char *)data.getData().data(), data.getLocalSize()*sizeof(real_t));
 }
-
-
-
-
-
 

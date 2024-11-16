@@ -12,6 +12,11 @@ void benchmark::write(data_t & data, ioCtl_t & ctl)
 
     benchmarkTimer.start();
     ctl.write(data);
+    if (sync)
+    {
+        ctl.sync();
+    }
+    
     benchmarkTimer.end();
 
     real_t localSizeTransferred=data.getLocalSize();
