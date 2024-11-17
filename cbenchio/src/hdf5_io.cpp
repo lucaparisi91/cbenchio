@@ -91,3 +91,12 @@ void hdf5_io::read( distributedCartesianArray & data)
     auto status = H5Dread(dsetId, H5T_NATIVE_DOUBLE, memSpaceId, fileSpaceId, pListTransfer, data.getData().data() );
 
 }
+
+void hdf5_io::sync()
+{
+    auto ret = H5Fflush (fileId, H5F_SCOPE_GLOBAL 	);
+    if (ret!=0)
+    {
+        throw std::runtime_error("Could not sync file with HDF5.");
+    };
+}
