@@ -118,11 +118,10 @@ void distributedCartesianArray::print() const
 
     MPI_Comm_rank( comm, & rank);
     MPI_Comm_size( comm, & nRanks);
-    if (rank == 0)
-    {
-        std::cout << "Array grid: " << globalShape[0] << " " << globalShape[1] << " " << globalShape[2] << std::endl;
-        std::cout << "Processor grid: " << nRanksCartesian[0] << " " << nRanksCartesian[1] << " " << nRanksCartesian[2 ] << std::endl;
-    }
+  
+    std::cout << "Array grid: " << globalShape[0] << " " << globalShape[1] << " " << globalShape[2] << std::endl;
+    std::cout << "Processor grid: " << nRanksCartesian[0] << " " << nRanksCartesian[1] << " " << nRanksCartesian[2 ] << std::endl;
+
 
     // for (int i=0; i< nRanks;i++)
     // {

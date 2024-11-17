@@ -146,12 +146,14 @@ int main(int argc, char ** argv)
     {
         auto benchmarkNode=node;
 
-
         auto basenames = createFileNames(benchmarkNode);
         auto data= createData(benchmarkNode);
-
-        data.print();
         
+        if (rank ==0 )
+        {
+            data.print();
+        }
+
         auto name = getName(benchmarkNode);
         auto repeat = benchmarkNode["repeat"].as<int>(1);
         auto sync = benchmarkNode["sync"].as<bool>(false);   
