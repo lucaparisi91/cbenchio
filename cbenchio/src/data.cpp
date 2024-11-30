@@ -2,10 +2,6 @@
 #include <iostream>
 
 
-
-
-
-
 distributedVector::distributedVector( MPI_Comm comm_,size_t globalSize_ ) : comm(comm_),globalSize(globalSize_)
 {
     int rank,nRanks;
