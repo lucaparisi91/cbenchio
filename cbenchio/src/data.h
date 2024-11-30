@@ -80,6 +80,10 @@ class distributedCartesianArray
     auto getNDimensions() const { return nDimensions;}
 
     void print() const ;
+
+    bool checkAlmostEqual(const distributedCartesianArray & data2 ,real_t tol = 1e-6) const;
+
+    
     private:
 
     
@@ -98,6 +102,7 @@ class distributedCartesianArray
     std::array<int,3> rankCartesian,period,nRanksCartesian;
 
     int nDimensions;
+
 
 
 

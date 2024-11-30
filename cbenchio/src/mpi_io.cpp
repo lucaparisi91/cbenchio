@@ -41,8 +41,12 @@ void mpi_io::open(std::string filename, distributedCartesianArray & data, benchi
         modeMPI = MPI_MODE_CREATE | MPI_MODE_WRONLY;
     }
     
-    MPI_File_open( comm, filename.c_str(), modeMPI, MPI_INFO_NULL, &fh );
+    int ret = MPI_File_open( comm, filename.c_str(), modeMPI, MPI_INFO_NULL, &fh );
     
+    if (ret != MPI_SUCCESS )
+    {
+        throw std::runtime_error("Could not open file: " + filename);
+    }
 
     MPI_File_set_view( fh, disp, MPI_DOUBLE, subArrayDataType, "native" , MPI_INFO_NULL );
 
@@ -58,11 +62,20 @@ void mpi_io::read( distributedCartesianArray & data)
     
     // MPI_File_open( MPI_COMM_WORLD, basename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &fh );
     // MPI_File_set_view( fh, disp, MPI_DOUBLE, subArrayDataType, "native" , MPI_INFO_NULL );
+    int ret;
+
     if (isCollective)
-        MPI_File_read_all(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);   
+        ret=MPI_File_read_all(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);   
     else 
-         MPI_File_read(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
+        ret=MPI_File_read(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
+
+    if (ret!=MPI_SUCCESS)
+    {
+        throw std::runtime_error("MPI file read did not succeed." );
+    }
 }
+
+
 
 
 void mpi_io::close()
@@ -74,16 +87,20 @@ void mpi_io::close()
 
 void mpi_io::write( distributedCartesianArray & data) 
 {
-    
+    int ret;
     if (isCollective)
     {
-        MPI_File_write_all(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
+        ret=MPI_File_write_all(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
     }
     else 
     {
-        MPI_File_write(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
+        ret= MPI_File_write(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
     }
-   
+    
+    if (ret!=MPI_SUCCESS)
+    {
+        throw std::runtime_error("MPI file write did not succeed." );
+    }
     
    // MPI_File_close(&fh );
    // finalizeFileDataType(subArrayDataType);
@@ -93,7 +110,7 @@ void mpi_io::write( distributedCartesianArray & data)
 void mpi_io::sync()
 {
     auto ret = MPI_File_sync(fh);
-    if (ret!=0)
+    if (ret!=MPI_SUCCESS)
     {
         throw std::runtime_error("Could not sync file with MPI.");
     };

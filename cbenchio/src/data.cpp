@@ -1,7 +1,6 @@
 #include "data.h"
 #include <iostream>
 
-
 distributedVector::distributedVector( MPI_Comm comm_,size_t globalSize_ ) : comm(comm_),globalSize(globalSize_)
 {
     int rank,nRanks;
@@ -136,4 +135,18 @@ void distributedCartesianArray::print() const
     
     
 
+}
+
+bool distributedCartesianArray::checkAlmostEqual(const distributedCartesianArray & data2, real_t tol ) const
+{
+    Eigen::Tensor<real_t,0> diff = ( getData() - data2.getData() ).abs().maximum();
+
+    bool isAlmostEqual= diff.coeff() < tol;
+    
+    if (not isAlmostEqual)
+                        {
+                            std::cout << "Warning: data is not compatible, diff is " << diff.coeff() << " which is less than " << tol << "." << std::endl;
+                        }
+
+    return isAlmostEqual;
 }

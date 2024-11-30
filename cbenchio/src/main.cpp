@@ -44,8 +44,7 @@ auto createData( const YAML::Node & benchmark)
         comm=MPI_COMM_SELF;
     }
 
-    distributedCartesianArray data(comm, shape,processorGrid);
-    return data;
+    return std::make_shared<distributedCartesianArray>(comm,shape,processorGrid);
 
 };
 
@@ -145,28 +144,49 @@ int main(int argc, char ** argv)
     for ( const auto node : config["benchmarks"])
     {
         auto benchmarkNode=node;
+        
 
         auto basenames = createFileNames(benchmarkNode);
-        auto data= createData(benchmarkNode);
         
+        
+        std::shared_ptr<distributedCartesianArray> data;
+        data= createData(benchmarkNode);
+
+
+  
+
         if (rank ==0 )
         {
-            data.print();
+            data->print();
         }
 
         auto name = getName(benchmarkNode);
         auto repeat = benchmarkNode["repeat"].as<int>(1);
         auto sync = benchmarkNode["sync"].as<bool>(false);  
         auto operation = benchmarkNode["operation"].as<std::string>("write");
+        
 
-        indexDataGenerator gen;
         if (rank==0)
         {
             std::cout << "Name: "<< name <<std::endl;
 
         }        
+        
+        std::shared_ptr<distributedCartesianArray> valid_data;
+        if (operation == "read")
+        {
+            valid_data = createData(benchmarkNode);
+        }
 
-        gen.generate(data);
+        indexDataGenerator gen;
+        if (operation == "read")
+        {
+            gen.generate(*valid_data);
+        }
+        else 
+        {
+            gen.generate(*data);
+        }
         
 
         for (int i=0;i<repeat;i++)
@@ -179,11 +199,11 @@ int main(int argc, char ** argv)
 
                     if (operation == "write")
                     {
-                        writer->open(basename,data,benchio::writeMode);
+                        writer->open(basename,*data,benchio::writeMode);
                     }
                     else 
                     {
-                        writer->open(basename,data,benchio::readMode);
+                        writer->open(basename,*data,benchio::readMode);
                     }
                         
                     benchmark current_benchmark( name  );
@@ -194,11 +214,22 @@ int main(int argc, char ** argv)
                         std::cout << "---------------------" <<std::endl;
                     }
 
-                    current_benchmark.write(data, *writer);
+                    current_benchmark.write(*data, *writer);
 
                     writer->close();
 
                     auto response = current_benchmark.report_yaml() ;
+
+         
+
+                    if( operation=="read" )
+                    {
+                        //if (rank==0) std::cout << "Checking read data..." << std::endl;
+                        bool isAlmostEqual=data->checkAlmostEqual(*valid_data);
+
+                        response["checked"]=true;
+                        
+                    }
 
                     if ( rank ==0)
                     {
@@ -206,9 +237,11 @@ int main(int argc, char ** argv)
                         benchmarkNode["results"].push_back(response);
                         
                     }
+                    
             }
             
         }
+
         configOut["benchmarks"].push_back(benchmarkNode);
 
     }
@@ -219,6 +252,7 @@ int main(int argc, char ** argv)
         f.open("report.yaml");
         f << configOut;
         f.close();
+        std::cout << "Done" << std::endl;
     }
 
     MPI_Finalize();
