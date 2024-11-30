@@ -21,4 +21,14 @@ An example configuration file can found in config.yaml .
     - Shape of the 3D array to write to memory
 - processorGid: array of 3 integers, default [0,0,0]
     - Processor grid size
-    
+- operation: string
+    Either "read" or "write    
+
+## Build on Archer2
+
+```bash
+module load PrgEnv-gnu
+module load cray-hdf5-parallel
+module load cmake
+cmake ../cbenchio -DCMAKE_INSTALL_PREFIX=<my_current directory>
+```
