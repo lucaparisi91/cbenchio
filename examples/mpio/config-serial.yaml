@@ -1,8 +1,0 @@
-
-benchmarks:
-    -
-        API: "posix"
-        filePerProcess: true
-        shape: [100000000,1,1]
-        paths: ["data"]
-        repeat: 1
