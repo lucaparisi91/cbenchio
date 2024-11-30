@@ -9,9 +9,21 @@ void benchmark::write(data_t & data, ioCtl_t & ctl)
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
-
+    
     benchmarkTimer.start();
-    ctl.write(data);
+
+    if (operation == "write" )
+    {
+        ctl.write(data);
+    }
+    else if ( operation == "read")
+    {
+        ctl.read(data);
+    }
+    else
+    {
+        throw std::runtime_error( "Error at"  __FILE__ ": operation " + operation + " not recognised.");
+    }
     if (sync)
     {
         ctl.sync();

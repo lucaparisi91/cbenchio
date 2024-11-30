@@ -156,7 +156,8 @@ int main(int argc, char ** argv)
 
         auto name = getName(benchmarkNode);
         auto repeat = benchmarkNode["repeat"].as<int>(1);
-        auto sync = benchmarkNode["sync"].as<bool>(false);   
+        auto sync = benchmarkNode["sync"].as<bool>(false);  
+        auto operation = benchmarkNode["operation"].as<std::string>("write");
 
         indexDataGenerator gen;
         if (rank==0)
@@ -176,10 +177,18 @@ int main(int argc, char ** argv)
                                     
                     auto writer = createWriter(benchmarkNode);
 
-                    writer->open(basename,data,benchio::writeMode);
-
+                    if (operation == "write")
+                    {
+                        writer->open(basename,data,benchio::writeMode);
+                    }
+                    else 
+                    {
+                        writer->open(basename,data,benchio::readMode);
+                    }
+                        
                     benchmark current_benchmark( name  );
                     current_benchmark.setFileSync(sync);
+                    current_benchmark.setOperation(operation);
 
                     if (rank==0) {
                         std::cout << "---------------------" <<std::endl;
