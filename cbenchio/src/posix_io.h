@@ -30,9 +30,9 @@ class posix_io : public ctl_io
 
     int rank,nRanks;
     bool aligned=false;
-    size_t alignment = 1048576 ;
-
-    int f; // file descriptor
+    size_t alignment = 1048576 ; // default 1MiB aligmnet 
+    int f; // file descript
+    size_t max_read_write_operations=10000;
 };
 
 

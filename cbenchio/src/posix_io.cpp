@@ -37,9 +37,17 @@ void posix_io::open(std::string filename, distributedCartesianArray & data, benc
 
     f = posix::open( filename.c_str(), posixMode,0666 );
 
+    if ( f< 0 )
+    {
+        throw std::runtime_error("Error: Could not open POSIX file.");
+    }
 
-    posix::lseek( f, data.getLocalOffset()[0]*sizeof(real_t), SEEK_SET );
 
+    off_t ret=posix::lseek( f, data.getLocalOffset()[0]*sizeof(real_t), SEEK_SET );
+    if (ret<0 )
+    {
+        throw std::runtime_error("Error: Could not seek to the file offset");
+    }
 };
 
 void posix_io::setAligment( size_t alignment_)
@@ -62,6 +70,8 @@ void posix_io::write( distributedCartesianArray & data)
     size_t written_bytes=0;
     auto  offset= (char * )data.getData().data();
     size_t current_bytes_write = 0;
+    size_t counter=0;
+
     while (bytes_to_write != 0 )
     {
         if (aligned)
@@ -77,9 +87,12 @@ void posix_io::write( distributedCartesianArray & data)
 
         offset+= written_bytes;
         bytes_to_write-=written_bytes;
-
-       if (written_bytes < 0 ) throw std::runtime_error("Not all bytes were written succesfully");
+        
+       if (written_bytes < 0 ) throw std::runtime_error("Error: Not all bytes were written succesfully");
     }
+
+    if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
+    counter++;
 
 }
 
@@ -94,14 +107,42 @@ void posix_io::sync()
     auto ret = posix::syncfs(f);
     if (ret != 0)
     {
-        throw std::runtime_error("Could not sync posix file");
-    };
-    
-}
+        throw std::runtime_error("Error: Not all bytes were written succesfully");
+    }; 
 
+}
 
 void posix_io::read( distributedCartesianArray & data) 
-{
-    posix::read(f, (char *)data.getData().data(), data.getLocalSize()*sizeof(real_t));
-}
+{  
+    
+    auto bytes_to_read=data.getLocalSize()*sizeof(real_t);
+    size_t read_bytes=0;
+    auto  offset= (char * )data.getData().data();
+    size_t current_bytes_read = 0;
+    size_t counter=0;
 
+    while (bytes_to_read != 0  )
+    {
+        if (aligned)
+            {   
+                current_bytes_read=std::min( bytes_to_read , alignment);
+            }
+            else 
+            {
+                current_bytes_read=bytes_to_read;
+            }
+        
+        read_bytes= posix::read(f, offset , current_bytes_read );
+        //std::cout << "Bytes read: " << read_bytes << std::endl;
+        //std::cout << "Bytes to read: " << current_bytes_read << std::endl;
+        
+
+        offset+= read_bytes;
+        bytes_to_read-=read_bytes;
+        if (read_bytes < 0 ) throw std::runtime_error("Error: Not all bytes were read succesfully");
+
+        if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
+        counter++;
+    }
+
+}
