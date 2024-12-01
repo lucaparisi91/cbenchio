@@ -1,5 +1,38 @@
-test-local:
+variables:
+  SLURM_job_name: gitlab-ci
+  SLURM_account: z19
+  SLURM_partition: standard
+  SLURM_qos: short
+
+build-cbenchio:
   variables:
     ON_COMPUTE: "FALSE"
+  stage: build
+  artifacts:
+    paths: ["build/src/benchio"]
   script:
-    - echo "I am running on $(hostname)"
+    - mkdir -p build
+    - cd build
+    - module load PrgEnv-gnu
+    - module load cray-hdf5-parallel
+    - CXX=CC CC=cc FC=ftn cmake ../cbenchio
+    - VERBOSE=1 make -j 4
+    - make
+
+run_test:
+  stage: test
+  needs: 
+    - job: build-cbenchio
+      artifacts: true
+  variables:
+    ON_COMPUTE: "TRUE"
+    SLURM_time: "00:03:00"
+    SLURM_nodes: 1
+    SLURM_tasks_per_node: 40
+    SLURM_exclusive: "TRUE"
+  script:
+    - module load PrgEnv-gnu
+    - module load cray-hdf5-parallel
+    - cp examples/mpi.yaml config.yaml
+    - mkdir data
+    - srun build/src/benchio
