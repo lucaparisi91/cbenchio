@@ -1,0 +1,5 @@
+test-local:
+  variables:
+    ON_COMPUTE: "FALSE"
+  script:
+    - echo "I am running on $(hostname)"
