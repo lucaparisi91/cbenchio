@@ -9,7 +9,7 @@ build-cbenchio:
     ON_COMPUTE: "FALSE"
   stage: build
   artifacts:
-    paths: ["build"]
+    paths: [build/]
   script:
     - mkdir -p build
     - cd build
@@ -25,7 +25,7 @@ run_mpi_test:
     - job: build-cbenchio
       artifacts: true
   
-
+  
   variables:
     ON_COMPUTE: "TRUE"
     SLURM_time: "00:03:00"
@@ -55,4 +55,3 @@ run_unit_tests:
     - module load cray-hdf5-parallel
     - cd build
     - ctest -v
-    
