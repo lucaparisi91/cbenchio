@@ -10,7 +10,9 @@ build-cbenchio:
   stage: build
   artifacts:
     untracked: true
-    paths: [build/]
+    paths:
+      - build/src/benchio
+      - build/test/test_*
   script:
     - mkdir -p build
     - cd build
