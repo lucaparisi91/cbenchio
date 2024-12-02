@@ -36,6 +36,7 @@ run_mpi_test:
     SLURM_tasks_per_node: 40
     SLURM_exclusive: "TRUE"
   script:
+    - pwd
     - module load PrgEnv-gnu
     - module load cray-hdf5-parallel
     - cp examples/mpi.yaml config.yaml
@@ -57,6 +58,7 @@ run_hdf5_test:
     SLURM_tasks_per_node: 40
     SLURM_exclusive: "TRUE"
   script:
+    - pwd
     - module load PrgEnv-gnu
     - module load cray-hdf5-parallel
     - cp examples/hdf5.yaml config.yaml
@@ -75,6 +77,7 @@ run_unit_tests:
     SLURM_tasks_per_node: 40
     SLURM_exclusive: "TRUE"
   script:
+    - pwd
     - module load PrgEnv-gnu
     - module load cray-hdf5-parallel
     - cd build
