@@ -9,7 +9,7 @@ build-cbenchio:
     ON_COMPUTE: "FALSE"
   stage: build
   artifacts:
-    paths: [build/src/benchio]
+    paths: [build/]
   script:
     - mkdir -p build
     - cd build
