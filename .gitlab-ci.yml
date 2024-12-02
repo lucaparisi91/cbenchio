@@ -39,7 +39,28 @@ run_mpi_test:
     - module load PrgEnv-gnu
     - module load cray-hdf5-parallel
     - cp examples/mpi.yaml config.yaml
-    - mkdir data
+    - mkdir -p data
+    - srun build/src/benchio
+
+
+run_hdf5_test:
+  stage: test
+  needs: 
+    - job: build-cbenchio
+      artifacts: true
+  
+  
+  variables:
+    ON_COMPUTE: "TRUE"
+    SLURM_time: "00:05:00"
+    SLURM_nodes: 1
+    SLURM_tasks_per_node: 40
+    SLURM_exclusive: "TRUE"
+  script:
+    - module load PrgEnv-gnu
+    - module load cray-hdf5-parallel
+    - cp examples/hdf5.yaml config.yaml
+    - mkdir -p data
     - srun build/src/benchio
 
 run_unit_tests:
