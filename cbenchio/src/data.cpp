@@ -102,7 +102,7 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm_,std::array<
 
     localSize=localShape[0] * localShape[1] * localShape[2] ;
     
-    localData.resize( { (long signed int)localShape[0] , (long signed int)localShape[1],(long signed int)localShape[2] });
+    localData= std::make_unique<benchioArray>(localShape);
 
     
 }
@@ -137,16 +137,3 @@ void distributedCartesianArray::print() const
 
 }
 
-bool distributedCartesianArray::checkAlmostEqual(const distributedCartesianArray & data2, real_t tol ) const
-{
-    Eigen::Tensor<real_t,0> diff = ( getData() - data2.getData() ).abs().maximum();
-
-    bool isAlmostEqual= diff.coeff() < tol;
-    
-    if (not isAlmostEqual)
-                        {
-                            std::cout << "Warning: data is not compatible, diff is " << diff.coeff() << " which is less than " << tol << "." << std::endl;
-                        }
-
-    return isAlmostEqual;
-}

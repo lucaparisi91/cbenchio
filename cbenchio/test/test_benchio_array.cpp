@@ -19,7 +19,9 @@ int main(int argc, char ** argv)
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
-    std::array<index_t,3> shape { 3,4,5 };
+    std::array<index_t,3> shape { 30,40,53 };
+    std::array<index_t,3> shape2_shrink { 3,4,5 };
+    std::array<index_t,3> shape2_shrink_enlarge { 300,4,58 };
 
     benchioArray arr(shape[0],shape[1],shape[2]);
     
@@ -42,9 +44,6 @@ int main(int argc, char ** argv)
             }
     
     
-    
-    
-
     MPI_Finalize();
 
 }

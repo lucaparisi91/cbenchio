@@ -8,6 +8,7 @@ namespace testing
     {
         if (!condition)
         {   
+            
             std::cerr << "Check Failed : " ;
             std::cerr << msg << std::endl;
 
@@ -57,6 +58,8 @@ namespace testing
         MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
         std::cout << msg <<  " Rank "<<rank<< ": " <<arr[0] << " " << arr[1] << " " << arr[2] << std::endl;
     }
+
+
 
 }
 

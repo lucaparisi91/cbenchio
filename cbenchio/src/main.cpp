@@ -131,11 +131,13 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
 int main(int argc, char ** argv)
 {
     int rank=-1, nRanks=-1;
-
     MPI_Init( &argc , & argv);
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
+
+    const real_t tol = 1e-7;
+
 
     YAML::Node config = YAML::LoadFile("config.yaml");
 
@@ -221,12 +223,12 @@ int main(int argc, char ** argv)
                     auto response = current_benchmark.report_yaml() ;
                     
                     response["file_rank_0"]=basename;
-                    
+            
 
                     if( operation=="read" )
                     {
                         //if (rank==0) std::cout << "Checking read data..." << std::endl;
-                        bool isAlmostEqual=data->checkAlmostEqual(*valid_data);
+                        bool isAlmostEqual= ( distance(data->getData(),valid_data->getData()) <= tol);
 
                         response["checked"]=true;
                         
