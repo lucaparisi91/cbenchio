@@ -13,7 +13,8 @@ class benchioArray
 
     benchioArray() : _shape{0,0,0},_size{0} {};
     benchioArray( index_t i, index_t j, index_t k);
-
+    benchioArray( index_t i, index_t j, index_t k, size_t alignment);
+    
     benchioArray(std::array<index_t,3> shape) : benchioArray(shape[0],shape[1],shape[2]) {}
     
     const auto & getShape() const { return _shape;}
