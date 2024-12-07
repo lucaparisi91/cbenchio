@@ -219,8 +219,9 @@ int main(int argc, char ** argv)
                     writer->close();
 
                     auto response = current_benchmark.report_yaml() ;
-
-         
+                    
+                    response["file_rank_0"]=basename;
+                    
 
                     if( operation=="read" )
                     {

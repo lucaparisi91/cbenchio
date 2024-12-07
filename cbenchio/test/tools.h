@@ -15,9 +15,12 @@ namespace testing
         }
         else 
         {
-            std::cerr << "Check Succeeded : " ;
-            std::cerr << msg << std::endl;
-
+            if (msg != "")
+            {
+                std::cerr << "Check Succeeded : " ;
+                std::cerr << msg << std::endl;
+            }
+            
         }
     };
 
@@ -26,7 +29,7 @@ namespace testing
     {
         auto cond = std::abs( (double)(a -b) ) < tol;
         std::stringstream ss;
-        ss << usrMsg << std::endl;
+        ss << usrMsg;
         if (!cond) ss << a << " differ from " << b << std::endl; 
         check( std::abs( (double)(a -b) ) < tol ,ss.str() );
     }
@@ -36,9 +39,13 @@ namespace testing
     template<class T>
     void check_near( std::array<T,3> a, std::array<T,3> b   , std::string usrMsg = "",real_t tol=1e-7)
     {
+        
+
         for(int d=0;d<3;d++)
         {
-            check_near( a[d],b[d],usrMsg,tol);
+            std::stringstream ss;
+            ss << usrMsg << " d=" << d;
+            check_near( a[d],b[d],ss.str(),tol);
         }
     }
 
