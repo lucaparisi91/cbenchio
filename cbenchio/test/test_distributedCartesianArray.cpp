@@ -63,8 +63,9 @@ int main(int argc, char ** argv)
 
     auto sum_expected = N * (N-1)*(2*N-1)/6. * N * 2;
 
-    
-    real_t sum_local =  (Eigen::Tensor<real_t,0>(data.getData().sum() ))();
+    auto sum_local = sum(data.getData());
+
+
     real_t sum_global=0;
     MPI_Reduce( &sum_local, &sum_global , 1 , MPI_DOUBLE, MPI_SUM, 0 , MPI_COMM_WORLD );
 

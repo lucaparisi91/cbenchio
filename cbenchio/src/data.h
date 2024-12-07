@@ -7,6 +7,7 @@
 #include "definitions.h"
 #include <array>
 #include <unsupported/Eigen/CXX11/Tensor>
+#include "benchioArray.h"
 
 
 // struct grid_shape
@@ -72,23 +73,21 @@ class distributedCartesianArray
     const auto & getGlobalSize() const { return globalSize;}
 
     
-    const auto & getData() const { return localData; }
-    auto & getData() { return localData; }
+    const auto & getData() const { return *localData; }
+    auto & getData() { return *localData; }
 
     auto getCartesianCommunicator() {return cartesian_comm;}
     
     auto getNDimensions() const { return nDimensions;}
 
     void print() const ;
-
-    bool checkAlmostEqual(const distributedCartesianArray & data2 ,real_t tol = 1e-6) const;
-
+    
     
     private:
 
     
-    Eigen::Tensor<real_t,3> localData;
-    
+    std::unique_ptr<benchioArray> localData;
+
     std::array<index_t,max_dims> localShape;
     std::array<index_t,max_dims> globalShape;
     

@@ -41,11 +41,11 @@ int main(int argc, char ** argv)
     reader.close();
 
 
-   real_t dis= Eigen::Tensor<real_t,0>((data2.getData() - data1.getData()).abs().sum())();
+    auto diff = distance(data2.getData(),data1.getData() );  
    
-   std::cout << dis << std::endl;
+    std::cout << diff << std::endl;
 
-   testing::check_near( dis, 0 , "Distance btw. read and write " );
+   testing::check_near( diff, 0 , "Distance btw. read and write " );
 
    MPI_Finalize();
 

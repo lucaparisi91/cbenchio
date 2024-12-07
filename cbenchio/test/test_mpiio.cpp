@@ -38,8 +38,8 @@ int main(int argc, char ** argv)
    reader.close();
 
 
-    real_t diff = ((Eigen::Tensor<real_t,0>)((data1.getData() - data2.getData()).abs().sum() ))();
-
+    real_t diff = distance(data2.getData(),data1.getData() );  
+    
     testing::check_near( diff, 0, "Data distance");
 
 

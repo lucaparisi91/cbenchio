@@ -46,7 +46,7 @@ int main(int argc, char ** argv)
     
     
 
-    real_t diff_local = (Eigen::Tensor<real_t,0>((data2.getData() - data.getData() ).abs().sum()))();  
+    real_t diff_local = distance( data.getData(),data2.getData() );  
     real_t diff_global;
     MPI_Reduce( &diff_local, &diff_global , 1 , MPI_DOUBLE, MPI_SUM, 0 , MPI_COMM_WORLD );
 
