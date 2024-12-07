@@ -28,7 +28,7 @@ distributedVector::distributedVector( MPI_Comm comm_,size_t globalSize_ ) : comm
 
 
 
-distributedCartesianArray::distributedCartesianArray( MPI_Comm comm_,std::array<index_t,3> globalShape_ ,std::array<int, 3> processorGrid ) : comm(comm_)
+distributedCartesianArray::distributedCartesianArray( MPI_Comm comm_,std::array<index_t,3> globalShape_ ,std::array<int, 3> processorGrid, size_t alignment ) : comm(comm_)
 {
 
     globalShape=globalShape_;
@@ -102,8 +102,10 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm_,std::array<
 
     localSize=localShape[0] * localShape[1] * localShape[2] ;
     
-    localData= std::make_unique<benchioArray>(localShape);
 
+    localData= std::make_unique<benchioArray>(localShape,alignment);
+
+    
     
 }
 

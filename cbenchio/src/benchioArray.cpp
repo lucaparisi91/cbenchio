@@ -4,30 +4,30 @@
 #include <mpi.h>
 #include <iostream>
 
-benchioArray::benchioArray(index_t i,index_t j,index_t k) : 
-_shape{i,j,k}, _size(i*j*k)
-{
-    if (_size > 0)
-    {
-        _data = new real_t[_size];
-    }
-    
-}
+
 benchioArray::benchioArray(index_t i,index_t j,index_t k,size_t alignment) : 
 _shape{i,j,k}, _size(i*j*k)
 {
     if (_size > 0)
     {
-        size_t alloc_size= ( ( sizeof(real_t)*_size + alignment - 1)  / alignment )*alignment ;
+        if (alignment > 0 )
+            {
+            size_t alloc_size= ( ( sizeof(real_t)*_size + alignment - 1)  / alignment )*alignment ;
 
 
 
-        _data = (real_t *)(aligned_alloc( alignment , alloc_size ) );
-                
-        if(!_data)
+            _data = (real_t *)(aligned_alloc( alignment , alloc_size ) );
+
+            if(!_data)
+            {
+                std::cerr << "Error: Memory allocation of " << _size << "elements with aligment of " << alignment << "bytes failed.";
+                MPI_Abort(MPI_COMM_WORLD,1);
+            }
+        }
+        else 
         {
-            std::cerr << "Error: Memory allocation of " << _size << "elements with aligment of " << alignment << "bytes failed.";
-            MPI_Abort(MPI_COMM_WORLD,1);
+            _data = new real_t[_size];
+
         }
     }
 
