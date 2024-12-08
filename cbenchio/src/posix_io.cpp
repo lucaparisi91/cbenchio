@@ -97,11 +97,13 @@ void posix_io::write( distributedCartesianArray & data)
         bytes_to_write-=written_bytes;
         
        if (written_bytes < 0 ) throw std::runtime_error("Error: Not all bytes were written succesfully");
+
+       if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
+       counter++;
+   
     }
 
-    if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
-    counter++;
-
+    
 }
 
 void posix_io::close()
