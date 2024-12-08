@@ -23,6 +23,10 @@ An example configuration file can found in config.yaml .
     - Processor grid size
 - operation: string
     Either "read" or "write    
+- direct: bool, default is false
+    Perform direct I/O
+- alignment: bool, default is zero
+    Allocates memory aligned array. The read/write posix calls will be splits in calls of max size equal to the alignment
 
 ## Build on Archer2
 

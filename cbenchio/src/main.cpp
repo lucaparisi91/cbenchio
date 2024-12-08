@@ -192,23 +192,46 @@ int main(int argc, char ** argv)
             gen.generate(*data);
         }
         
+        auto mode = benchio::writeMode;
+        bool isIdirect = benchmarkNode["direct"].as<bool>(false);
+
+        if (operation == "write")
+        {
+            if (isIdirect) 
+            {
+                mode = benchio::writeDirectMode;
+
+            }
+            else
+            {
+                mode = benchio::writeMode;
+            }
+
+        }
+
+
+        if (operation == "read")
+        {
+            if (isIdirect) 
+            {
+                mode = benchio::readDirectMode;
+
+            }
+            else
+            {
+                mode = benchio::readMode;
+            }
+            
+        }
 
         for (int i=0;i<repeat;i++)
         {
             for ( auto basename : basenames)
                 {
-
                                     
                     auto writer = createWriter(benchmarkNode);
 
-                    if (operation == "write")
-                    {
-                        writer->open(basename,*data,benchio::writeMode);
-                    }
-                    else 
-                    {
-                        writer->open(basename,*data,benchio::readMode);
-                    }
+                    writer->open(basename,*data,mode);
                         
                     benchmark current_benchmark( name  );
                     current_benchmark.setFileSync(sync);
@@ -232,8 +255,13 @@ int main(int argc, char ** argv)
                         //if (rank==0) std::cout << "Checking read data..." << std::endl;
                         bool isAlmostEqual= ( distance(data->getData(),valid_data->getData()) <= tol);
 
-                        response["checked"]=true;
+                        response["valid"]=isAlmostEqual;
                         
+                        if (not isAlmostEqual)
+                        {
+                            std::cerr << "Error: read data is invalid." << std::endl; 
+                            MPI_Abort(MPI_COMM_WORLD,1);
+                        }
                     }
 
                     if ( rank ==0)
