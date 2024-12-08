@@ -5,7 +5,7 @@ benchmarks:
         API: "posix"
         filePerProcess: true
         processorGrid: [0,0,0]
-        shape: [8388608,1,1]
+        shape: [8000000,1,1]
         paths: ["data"]
         repeat: 1
         sync: true
@@ -18,7 +18,7 @@ benchmarks:
         API: "posix"
         filePerProcess: true
         processorGrid: [0,0,0]
-        shape: [8388608,1,1]
+        shape: [8000000,1,1]
         paths: ["data"]
         repeat: 1
         sync: true
@@ -30,7 +30,7 @@ benchmarks:
         API: "posix"
         filePerProcess: true
         processorGrid: [0,0,0]
-        shape: [8388608,1,1]
+        shape: [8000000,1,1]
         paths: ["data"]
         repeat: 1
         sync: false
