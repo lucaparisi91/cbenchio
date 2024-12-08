@@ -67,7 +67,7 @@ run_hdf5_test:
     - mkdir -p data
     - srun build/src/benchio
   
-  run_hdf5_test:
+  run_posix_test:
   stage: test
   needs: 
     - job: build-cbenchio
