@@ -255,7 +255,7 @@ int main(int argc, char ** argv)
                         //if (rank==0) std::cout << "Checking read data..." << std::endl;
                         bool isAlmostEqual= ( distance(data->getData(),valid_data->getData()) <= tol);
 
-                        response["checked"]=true;
+                        response["valid"]=isAlmostEqual;
                         
                     }
 
