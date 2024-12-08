@@ -257,6 +257,11 @@ int main(int argc, char ** argv)
 
                         response["valid"]=isAlmostEqual;
                         
+                        if (not isAlmostEqual)
+                        {
+                            std::cerr << "Error: read data is invalid." << std::endl; 
+                            MPI_Abort(MPI_COMM_WORLD,1);
+                        }
                     }
 
                     if ( rank ==0)
