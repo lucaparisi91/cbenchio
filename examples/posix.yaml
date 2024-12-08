@@ -1,6 +1,7 @@
 
 benchmarks:
     -
+        name: "write direct"
         API: "posix"
         filePerProcess: true
         processorGrid: [0,0,0]
@@ -13,6 +14,7 @@ benchmarks:
         alignment: 1048576
     
     -
+        name: "write buffered"
         API: "posix"
         filePerProcess: true
         processorGrid: [0,0,0]
@@ -24,6 +26,7 @@ benchmarks:
         direct: false
         alignment: 0
     -
+        name: "read and check"
         API: "posix"
         filePerProcess: true
         processorGrid: [0,0,0]
