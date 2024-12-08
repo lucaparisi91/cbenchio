@@ -89,6 +89,7 @@ void posix_io::write( distributedCartesianArray & data)
     {
         size_t bytes_chunk_to_write=std::min(bytes_to_write,currentChunkSize);
         
+        counter=0;
         while (bytes_chunk_to_write != 0 )
         {
 
@@ -149,6 +150,7 @@ void posix_io::read( distributedCartesianArray & data)
     {
         size_t bytes_chunk_to_read=std::min(bytes_to_read,currentChunkSize);
         
+        counter=0;
         while (bytes_chunk_to_read != 0 )
         {
 
