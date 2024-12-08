@@ -23,16 +23,15 @@ class posix_io : public ctl_io
 
     virtual void sync();
     
-    void setAligment(size_t aligment);
+    void setChunkSize(size_t aligment);
 
 
     private:
 
     int rank,nRanks;
-    bool aligned=false;
-    size_t alignment = 1048576 ; // default 1MiB aligmnet 
+    size_t chunkSize = 0;
     int f; // file descript
-    size_t max_read_write_operations=10000;
+    size_t max_read_write_operations=100000;
 };
 
 

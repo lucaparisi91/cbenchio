@@ -89,8 +89,8 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
     if ( api == "posix" )
     {
         auto writer=  std::make_shared<posix_io>();
-        auto aligment = benchmark["aligment"].as<size_t>( 0 );
-        writer->setAligment(aligment);
+        auto chunkSize = benchmark["chunkSize"].as<size_t>( 0 );
+        writer->setChunkSize(chunkSize);
 
         return writer;
 
