@@ -6,7 +6,7 @@ benchmarks:
         filePerProcess: true
         processorGrid: [0,0,0]
         shape: [8388608,1,1]
-        paths: ["/mnt/lustre/a2fs-work4/work/z19/z19/lparisi/io_posix/data","/mnt/lustre/a2fs-nvme/work/z19/z19/lparisi/io_posix/data"]
+        paths: ["data"]
         repeat: 1
         sync: true
         operation: "write"
@@ -19,7 +19,7 @@ benchmarks:
         filePerProcess: true
         processorGrid: [0,0,0]
         shape: [8388608,1,1]
-        paths: ["/mnt/lustre/a2fs-work4/work/z19/z19/lparisi/io_posix/data","/mnt/lustre/a2fs-nvme/work/z19/z19/lparisi/io_posix/data"]
+        paths: ["data"]
         repeat: 1
         sync: true
         operation: "write"
@@ -31,7 +31,7 @@ benchmarks:
         filePerProcess: true
         processorGrid: [0,0,0]
         shape: [8388608,1,1]
-        paths: ["/mnt/lustre/a2fs-work4/work/z19/z19/lparisi/io_posix/data","/mnt/lustre/a2fs-nvme/work/z19/z19/lparisi/io_posix/data"]
+        paths: ["data"]
         repeat: 1
         sync: false
         alignment: 0
