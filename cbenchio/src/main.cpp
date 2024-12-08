@@ -44,7 +44,9 @@ auto createData( const YAML::Node & benchmark)
         comm=MPI_COMM_SELF;
     }
 
-    return std::make_shared<distributedCartesianArray>(comm,shape,processorGrid);
+    auto alignment = benchmark["alignment"].as<size_t>(0);
+
+    return std::make_shared<distributedCartesianArray>(comm,shape,processorGrid,alignment);
 
 };
 

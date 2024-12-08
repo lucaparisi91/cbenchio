@@ -56,3 +56,7 @@ add_parallel_test( test_mpiio_8x8 64)
 
 add_test_executable( test_benchio_array )
 add_parallel_test( test_benchio_array 1)
+
+
+add_test_executable( test_benchio_array_aligned )
+add_parallel_test( test_benchio_array_aligned 1)
