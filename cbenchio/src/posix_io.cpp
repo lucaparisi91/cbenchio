@@ -25,6 +25,14 @@ auto getPosixMode( benchio::openMode mode)
     {
         return O_RDONLY;
     }
+    else if (mode == benchio::readDirectMode)
+    {
+        return O_RDONLY | O_DIRECT ;
+    }
+    else if (mode == benchio::writeDirectMode)
+    {
+        return O_WRONLY | O_CREAT | O_DIRECT ;
+    }
     else 
     {
         throw std::invalid_argument("mode not supported by POSIX");

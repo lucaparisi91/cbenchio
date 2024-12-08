@@ -4,7 +4,6 @@
 #include <mpi.h>
 #include <iostream>
 
-
 benchioArray::benchioArray(index_t i,index_t j,index_t k,size_t alignment) : 
 _shape{i,j,k}, _size(i*j*k)
 {
