@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <stdexcept>
 #include "posix_io.h"
+#include <errno.h>
+
 
 namespace posix
 {
@@ -58,50 +60,56 @@ void posix_io::open(std::string filename, distributedCartesianArray & data, benc
     }
 };
 
-void posix_io::setAligment( size_t alignment_)
+void posix_io::setChunkSize( size_t chunkSize_)
 {
-    if (alignment_ > 0 )
-    {
-        aligned = true;
-        alignment=alignment_;
-    }
-    else 
-    {
-        aligned = false;
-
-    }
+    chunkSize = chunkSize_;
 } 
+
+
 void posix_io::write( distributedCartesianArray & data) 
 {  
-    
-    auto bytes_to_write=data.getLocalSize()*sizeof(real_t);
-    size_t written_bytes=0;
+
+    size_t bytes_to_write=data.getLocalSize()*sizeof(real_t);
+    long long int written_bytes=0;
     auto  offset= (char * )data.getData().data();
     size_t current_bytes_write = 0;
     size_t counter=0;
+    size_t currentChunkSize=0;
 
-    while (bytes_to_write != 0 )
+    if (chunkSize > 0) 
     {
-        if (aligned)
-            {   
-                current_bytes_write=std::min( bytes_to_write , alignment);
-            }
-            else 
-            {
-                current_bytes_write=bytes_to_write;
-            }
-            
-        written_bytes= posix::write(f, offset , current_bytes_write );
-
-        offset+= written_bytes;
-        bytes_to_write-=written_bytes;
-        
-       if (written_bytes < 0 ) throw std::runtime_error("Error: Not all bytes were written succesfully");
+        currentChunkSize=chunkSize;
+    }
+    else 
+    {
+        currentChunkSize=bytes_to_write;
     }
 
-    if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
-    counter++;
+    while (bytes_to_write >= currentChunkSize)
+    {
+        size_t bytes_chunk_to_write=std::min(bytes_to_write,currentChunkSize);
+        
+        counter=0;
+        while (bytes_chunk_to_write != 0 )
+        {
 
+            written_bytes= posix::write(f, offset , bytes_chunk_to_write );
+
+            // DEBUG // std::cout << written_bytes << " " << bytes_chunk_to_write << " " << bytes_to_write  << " " << chunkSize << std::endl;
+
+
+            offset+= written_bytes;
+            bytes_chunk_to_write-=written_bytes;
+            
+        if (written_bytes < 0 ) throw std::runtime_error("Error: POSIX write returned  error:  " + std::string(strerror(errno)) );
+
+        if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
+        counter++;
+    
+        }
+        bytes_to_write-= currentChunkSize;
+    }
+    
 }
 
 void posix_io::close()
@@ -122,35 +130,45 @@ void posix_io::sync()
 
 void posix_io::read( distributedCartesianArray & data) 
 {  
-    
-    auto bytes_to_read=data.getLocalSize()*sizeof(real_t);
-    size_t read_bytes=0;
+    size_t bytes_to_read=data.getLocalSize()*sizeof(real_t);
+    long long int written_bytes=0;
     auto  offset= (char * )data.getData().data();
     size_t current_bytes_read = 0;
     size_t counter=0;
+    size_t currentChunkSize=0;
 
-    while (bytes_to_read != 0  )
+    if (chunkSize > 0) 
     {
-        if (aligned)
-            {   
-                current_bytes_read=std::min( bytes_to_read , alignment);
-            }
-            else 
-            {
-                current_bytes_read=bytes_to_read;
-            }
-        
-        read_bytes= posix::read(f, offset , current_bytes_read );
-        //std::cout << "Bytes read: " << read_bytes << std::endl;
-        //std::cout << "Bytes to read: " << current_bytes_read << std::endl;
-        
+        currentChunkSize=chunkSize;
+    }
+    else 
+    {
+        currentChunkSize=bytes_to_read;
+    }
 
-        offset+= read_bytes;
-        bytes_to_read-=read_bytes;
-        if (read_bytes < 0 ) throw std::runtime_error("Error: Not all bytes were read succesfully");
+    while (bytes_to_read >= currentChunkSize)
+    {
+        size_t bytes_chunk_to_read=std::min(bytes_to_read,currentChunkSize);
+        
+        counter=0;
+        while (bytes_chunk_to_read != 0 )
+        {
+
+            written_bytes= posix::read(f, offset , bytes_chunk_to_read );
+
+            // DEBUG // std::cout << written_bytes << " " << bytes_chunk_to_read << " " << bytes_to_read  << " " << chunkSize << std::endl;
+
+
+            offset+= written_bytes;
+            bytes_chunk_to_read-=written_bytes;
+            
+        if (written_bytes < 0 ) throw std::runtime_error("Error: POSIX read returned  error:  " + std::string(strerror(errno)) );
 
         if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
         counter++;
+    
+        }
+        bytes_to_read-= currentChunkSize;
     }
 
 }

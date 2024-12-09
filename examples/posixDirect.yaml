@@ -1,26 +1,28 @@
 
 benchmarks:
     -
-        name: "write buffered"
+        name: "write direct"
         API: "posix"
         filePerProcess: true
         processorGrid: [0,0,0]
-        shape: [8000000,1,1]
+        shape: [409600,1,1]
         paths: ["data"]
         repeat: 1
         sync: true
         operation: "write"
-        direct: false
-        alignment: 0
+        direct: true
+        alignment: 4096
+        chunkSize: 4096
     -
-        name: "read and check"
+        name: "read direct"
         API: "posix"
         filePerProcess: true
         processorGrid: [0,0,0]
-        shape: [8000000,1,1]
+        shape: [409600,1,1]
         paths: ["data"]
         repeat: 1
-        sync: false
-        alignment: 0
-        direct: false
+        sync: true
         operation: "read"
+        direct: true
+        alignment: 4096
+        chunkSize: 4096
