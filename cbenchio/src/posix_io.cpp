@@ -8,7 +8,6 @@
 #include "posix_io.h"
 #include <errno.h>
 
-
 namespace posix
 {
 #include <fcntl.h>
@@ -41,6 +40,18 @@ auto getPosixMode( benchio::openMode mode)
     }
 }
 
+size_t posix_io::getInitialFileOffset(distributedCartesianArray & data)
+{
+    if (stride == 0) {
+        return data.getLocalOffset()[0]*sizeof(real_t);
+    }
+    else
+    {
+        return stride*sizeof(real_t);
+    };
+
+}
+
 void posix_io::open(std::string filename, distributedCartesianArray & data, benchio::openMode mode )
 {
     auto posixMode = getPosixMode(mode);
@@ -52,12 +63,13 @@ void posix_io::open(std::string filename, distributedCartesianArray & data, benc
         throw std::runtime_error("Error: Could not open POSIX file.");
     }
 
-
-    off_t ret=posix::lseek( f, data.getLocalOffset()[0]*sizeof(real_t), SEEK_SET );
+    off_t ret=posix::lseek( f, getInitialFileOffset(data), SEEK_SET );
+    
     if (ret<0 )
     {
         throw std::runtime_error("Error: Could not seek to the file offset");
     }
+
 };
 
 void posix_io::setChunkSize( size_t chunkSize_)
@@ -95,20 +107,28 @@ void posix_io::write( distributedCartesianArray & data)
 
             written_bytes= posix::write(f, offset , bytes_chunk_to_write );
 
-            // DEBUG // std::cout << written_bytes << " " << bytes_chunk_to_write << " " << bytes_to_write  << " " << chunkSize << std::endl;
-
-
             offset+= written_bytes;
             bytes_chunk_to_write-=written_bytes;
             
-        if (written_bytes < 0 ) throw std::runtime_error("Error: POSIX write returned  error:  " + std::string(strerror(errno)) );
+            if (written_bytes < 0 ) throw std::runtime_error("Error: POSIX write returned  error:  " + std::string(strerror(errno)) );
 
-        if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
-        counter++;
+            if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
+            counter++;
     
         }
         bytes_to_write-= currentChunkSize;
+        
+        if (stride > 0)
+        {
+            off_t ret= posix::lseek( f, stride - currentChunkSize, SEEK_CUR );
+
+            if (ret<0 )
+            {
+                throw std::runtime_error("Error: Could not seek to the next stride to write.");
+            }
+        }
     }
+
     
 }
 
@@ -120,6 +140,7 @@ void posix_io::close()
 
 void posix_io::sync()
 {
+        
     auto ret = posix::syncfs(f);
     if (ret != 0)
     {
@@ -162,13 +183,26 @@ void posix_io::read( distributedCartesianArray & data)
             offset+= written_bytes;
             bytes_chunk_to_read-=written_bytes;
             
-        if (written_bytes < 0 ) throw std::runtime_error("Error: POSIX read returned  error:  " + std::string(strerror(errno)) );
+            if (written_bytes < 0 ) throw std::runtime_error("Error: POSIX read returned  error:  " + std::string(strerror(errno)) );
 
-        if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
-        counter++;
+            if (counter > max_read_write_operations) throw std::runtime_error("Error: Maximum number of read attempts reached");
+            counter++;
     
         }
+        
         bytes_to_read-= currentChunkSize;
+
+        if (stride > 0)
+        {
+            off_t ret= posix::lseek( f, stride - currentChunkSize, SEEK_CUR );
+
+            if (ret<0 )
+            {
+                throw std::runtime_error("Error: Could not seek to the next stride.");
+            }
+        }
+
     }
+
 
 }

@@ -22,16 +22,20 @@ class posix_io : public ctl_io
     virtual void close();
 
     virtual void sync();
-    
+
     void setChunkSize(size_t aligment);
-
-
+    void setStride(size_t count){stride= count;}
+    
     private:
+
+    size_t getInitialFileOffset(distributedCartesianArray & data);
 
     int rank,nRanks;
     size_t chunkSize = 0;
-    int f; // file descript
+    int f; // file descriptor
     size_t max_read_write_operations=100000;
+    size_t stride = 0;
+
 };
 
 
