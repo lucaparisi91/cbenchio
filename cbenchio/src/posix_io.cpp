@@ -7,14 +7,14 @@
 #include <stdexcept>
 #include "posix_io.h"
 #include <errno.h>
-
-namespace posix
-{
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/resource.h>
 
-}
+
+//#include <lustre/lustre_user.h>
+//#include <lustre/lustreapi.h>
+
 
 auto getPosixMode( benchio::openMode mode)
 {
@@ -44,7 +44,7 @@ void posix_io::setStride()
 {
     strided=true;
     if (chunkSize == 0) chunkSize=sizeof(real_t);
-    
+
 }
 
 size_t posix_io::getStride(distributedCartesianArray & data) const
@@ -85,14 +85,14 @@ void posix_io::open(std::string filename, distributedCartesianArray & data, benc
 {
     auto posixMode = getPosixMode(mode);
 
-    f = posix::open( filename.c_str(), posixMode,0666 );
+    f = ::open( filename.c_str(), posixMode,0666 );
 
     if ( f< 0 )
     {
         throw std::runtime_error("Error: Could not open POSIX file.");
     }
 
-    off_t ret=posix::lseek( f, getInitialFileOffset(data), SEEK_SET );
+    off_t ret=lseek( f, getInitialFileOffset(data), SEEK_SET );
     
     if (ret<0 )
     {
@@ -134,7 +134,7 @@ void posix_io::write( distributedCartesianArray & data)
         while (bytes_chunk_to_write != 0 )
         {
 
-            written_bytes= posix::write(f, offset , bytes_chunk_to_write );
+            written_bytes= ::write(f, offset , bytes_chunk_to_write );
 
             offset+= written_bytes;
             bytes_chunk_to_write-=written_bytes;
@@ -149,7 +149,7 @@ void posix_io::write( distributedCartesianArray & data)
         
         if (strided )
         {
-            off_t ret= posix::lseek( f, getStride(data) , SEEK_CUR );
+            off_t ret= lseek( f, getStride(data) , SEEK_CUR );
             if (ret<0 )
             {
                 throw std::runtime_error("Error: Could not seek to the next stride to write.");
@@ -162,14 +162,14 @@ void posix_io::write( distributedCartesianArray & data)
 
 void posix_io::close()
 {
-    posix::close(f);
+    ::close(f);
 
 }
 
 void posix_io::sync()
 {
 
-    auto ret = posix::syncfs(f);
+    auto ret = ::syncfs(f);
     if (ret != 0)
     {
         throw std::runtime_error("Error: Not all bytes were written succesfully");
@@ -203,7 +203,7 @@ void posix_io::read( distributedCartesianArray & data)
         while (bytes_chunk_to_read != 0 )
         {
 
-            written_bytes= posix::read(f, offset , bytes_chunk_to_read );
+            written_bytes= ::read(f, offset , bytes_chunk_to_read );
 
             // DEBUG // std::cout << written_bytes << " " << bytes_chunk_to_read << " " << bytes_to_read  << " " << chunkSize << std::endl;
 
@@ -222,7 +222,7 @@ void posix_io::read( distributedCartesianArray & data)
 
         if (strided )
         {
-            off_t ret= posix::lseek( f, getStride(data), SEEK_CUR );
+            off_t ret= lseek( f, getStride(data), SEEK_CUR );
 
             if (ret<0 )
             {
