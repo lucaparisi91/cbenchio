@@ -43,8 +43,8 @@ auto getPosixMode( benchio::openMode mode)
 void posix_io::setStride()
 {
     strided=true;
-    if (chunkSize == 0) chunkSize=1;
-
+    if (chunkSize == 0) chunkSize=sizeof(real_t);
+    
 }
 
 size_t posix_io::getStride(distributedCartesianArray & data) const
@@ -55,7 +55,7 @@ size_t posix_io::getStride(distributedCartesianArray & data) const
 
         MPI_Comm_size( data.getCartesianCommunicator() , &nRanks );
 
-        return chunkSize * sizeof(real_t) * (nRanks-1);
+        return chunkSize * (nRanks-1);
 
     }
     else 
@@ -76,7 +76,7 @@ size_t posix_io::getInitialFileOffset(distributedCartesianArray & data) const
 
         MPI_Comm_rank( data.getCartesianCommunicator() , &rank );
 
-        return chunkSize*sizeof(real_t)*rank;
+        return chunkSize*rank;
     };
 
 }
