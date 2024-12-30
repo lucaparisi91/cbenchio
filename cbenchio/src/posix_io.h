@@ -24,17 +24,18 @@ class posix_io : public ctl_io
     virtual void sync();
 
     void setChunkSize(size_t aligment);
-    void setStride(size_t count){stride= count;}
+    void setStride();
     
     private:
 
-    size_t getInitialFileOffset(distributedCartesianArray & data);
+    size_t getInitialFileOffset(distributedCartesianArray & data) const ;
 
+    size_t getStride(distributedCartesianArray & data) const;
     int rank,nRanks;
     size_t chunkSize = 0;
     int f; // file descriptor
     size_t max_read_write_operations=100000;
-    size_t stride = 0;
+    bool strided = false;
 
 };
 

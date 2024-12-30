@@ -40,14 +40,35 @@ auto getPosixMode( benchio::openMode mode)
     }
 }
 
-size_t posix_io::getInitialFileOffset(distributedCartesianArray & data)
+void posix_io::setStride()
 {
-    if (stride == 0) {
+    strided=true;
+    if (chunkSize == 0) chunkSize=1;
+
+}
+
+size_t posix_io::getStride(distributedCartesianArray & data) const
+{
+    int nRanks;
+
+    MPI_Comm_size( data.getCartesianCommunicator() , &nRanks );
+
+    return chunkSize * sizeof(real_t) * (nRanks-1);
+
+}
+
+size_t posix_io::getInitialFileOffset(distributedCartesianArray & data) const
+{
+    if (strided) {
         return data.getLocalOffset()[0]*sizeof(real_t);
     }
     else
     {
-        return stride*sizeof(real_t);
+        int rank;
+
+        MPI_Comm_rank( data.getCartesianCommunicator() , &rank );
+
+        return chunkSize*sizeof(real_t)*rank;
     };
 
 }
@@ -118,9 +139,9 @@ void posix_io::write( distributedCartesianArray & data)
         }
         bytes_to_write-= currentChunkSize;
         
-        if (stride > 0)
+        if (strided )
         {
-            off_t ret= posix::lseek( f, stride - currentChunkSize, SEEK_CUR );
+            off_t ret= posix::lseek( f, getStride(data) , SEEK_CUR );
 
             if (ret<0 )
             {
@@ -140,7 +161,7 @@ void posix_io::close()
 
 void posix_io::sync()
 {
-        
+
     auto ret = posix::syncfs(f);
     if (ret != 0)
     {
@@ -192,9 +213,9 @@ void posix_io::read( distributedCartesianArray & data)
         
         bytes_to_read-= currentChunkSize;
 
-        if (stride > 0)
+        if (strided )
         {
-            off_t ret= posix::lseek( f, stride - currentChunkSize, SEEK_CUR );
+            off_t ret= posix::lseek( f, getStride(data), SEEK_CUR );
 
             if (ret<0 )
             {
