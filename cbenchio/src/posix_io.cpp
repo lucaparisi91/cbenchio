@@ -54,7 +54,7 @@ size_t posix_io::getStride(distributedCartesianArray & data) const
         int nRanks;
 
         MPI_Comm_size( data.getCartesianCommunicator() , &nRanks );
-        
+
         return chunkSize * sizeof(real_t) * (nRanks-1);
 
     }
@@ -150,7 +150,6 @@ void posix_io::write( distributedCartesianArray & data)
         if (strided )
         {
             off_t ret= posix::lseek( f, getStride(data) , SEEK_CUR );
-
             if (ret<0 )
             {
                 throw std::runtime_error("Error: Could not seek to the next stride to write.");

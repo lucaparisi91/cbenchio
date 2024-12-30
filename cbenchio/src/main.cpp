@@ -85,13 +85,14 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
 {
     auto api = benchmark["API"].as<std::string>();
 
-    
     if ( api == "posix" )
     {
         auto writer=  std::make_shared<posix_io>();
         auto chunkSize = benchmark["chunkSize"].as<size_t>( 0 );
         writer->setChunkSize(chunkSize);
-
+        auto strided = benchmark["strided"].as<bool>( 0 );
+        if (strided) writer->setStride();
+        
         return writer;
 
     }
