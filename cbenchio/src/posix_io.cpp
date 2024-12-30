@@ -49,17 +49,25 @@ void posix_io::setStride()
 
 size_t posix_io::getStride(distributedCartesianArray & data) const
 {
-    int nRanks;
+    if (strided)
+    {
+        int nRanks;
 
-    MPI_Comm_size( data.getCartesianCommunicator() , &nRanks );
+        MPI_Comm_size( data.getCartesianCommunicator() , &nRanks );
+        
+        return chunkSize * sizeof(real_t) * (nRanks-1);
 
-    return chunkSize * sizeof(real_t) * (nRanks-1);
+    }
+    else 
+    {
+        return 0;
+    }
 
 }
 
 size_t posix_io::getInitialFileOffset(distributedCartesianArray & data) const
 {
-    if (strided) {
+    if ( not strided) {
         return data.getLocalOffset()[0]*sizeof(real_t);
     }
     else
