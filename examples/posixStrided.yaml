@@ -1,0 +1,28 @@
+
+benchmarks:
+    -
+        name: "write"
+        API: "posix"
+        filePerProcess: false
+        processorGrid: [0,0,0]
+        shape: [8000,1,1]
+        paths: ["data"]
+        repeat: 1
+        sync: true
+        operation: "write"
+        repeat: 1
+        strided: true
+    -
+        name: "write"
+        API: "posix"
+        filePerProcess: false
+        processorGrid: [0,0,0]
+        shape: [8000,1,1]
+        paths: ["data"]
+        repeat: 1
+        sync: true
+        operation: "read"
+        repeat: 1
+        strided: true
+    
+    

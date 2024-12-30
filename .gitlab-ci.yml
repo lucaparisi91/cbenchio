@@ -111,6 +111,28 @@ run_posix_direct_test:
     - srun build/src/benchio
 
 
+run_posix_strided_test:
+  stage: test
+  needs: 
+    - job: build-cbenchio
+      artifacts: true
+
+
+  variables:
+    ON_COMPUTE: "TRUE"
+    SLURM_time: "00:05:00"
+    SLURM_nodes: 1
+    SLURM_tasks_per_node: 1
+    SLURM_exclusive: "TRUE"
+  script:
+    - pwd
+    - module load PrgEnv-gnu
+    - module load cray-hdf5-parallel
+    - cp examples/posixStrided.yaml config.yaml
+    - mkdir -p data
+    - srun build/src/benchio
+
+
 run_unit_tests:
   stage: test
   needs: 
