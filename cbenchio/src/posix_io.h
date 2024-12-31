@@ -25,7 +25,9 @@ class posix_io : public ctl_io
 
     void setChunkSize(size_t aligment);
     void setStride();
-    
+
+    void setLockAhead(distributedCartesianArray & data);
+
     private:
 
     size_t getInitialFileOffset(distributedCartesianArray & data) const ;
@@ -36,6 +38,8 @@ class posix_io : public ctl_io
     int f; // file descriptor
     size_t max_read_write_operations=100000;
     bool strided = false;
+    bool lockAhead = false;
+    benchio::openMode mode = benchio::unknown;
 
 };
 

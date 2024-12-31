@@ -11,13 +11,13 @@
 #include <unistd.h>
 #include <sys/resource.h>
 
-
-//#include <lustre/lustre_user.h>
-//#include <lustre/lustreapi.h>
+#include <lustre/lustre_user.h>
+#include <lustre/lustreapi.h>
 
 
 auto getPosixMode( benchio::openMode mode)
 {
+
     if ( mode == benchio::writeMode)
     {
         return O_WRONLY | O_CREAT;
@@ -44,6 +44,54 @@ void posix_io::setStride()
 {
     strided=true;
     if (chunkSize == 0) chunkSize=sizeof(real_t);
+
+}
+
+
+void posix_io::setLockAhead(distributedCartesianArray & data)
+{
+    struct llapi_lu_ladvise * advises;
+
+    size_t nAdvises=data.getLocalSize()/chunkSize;
+    advises = new llapi_lu_ladvise[nAdvises];
+    size_t offset = getInitialFileOffset(data);
+
+    for( size_t i=0;i< nAdvises; i++)
+    {
+        advises[i].lla_start = offset;
+        advises[i].lla_start=offset;
+        advises[i].lla_end=offset + chunkSize;
+
+        if (mode == benchio::readMode)
+        {
+            advises[i].lla_lockahead_mode=MODE_READ_USER;
+        }
+        else if (mode == benchio::writeMode)
+        {
+            advises[i].lla_lockahead_mode=MODE_WRITE_USER;
+        }
+        else
+        {
+            throw std::runtime_error("Mode " + std::to_string(mode) + "is not supported for lockahead" );
+
+        }
+
+
+        advises[i].lla_advice = LU_LADVISE_LOCKAHEAD;
+        advises[i].lla_value2= 0;
+        advises[i].lla_value4= 0;
+        advises[i].lla_lockahead_result = 545785; // set to an arbitrary non zero number, to set the result of lockahead;
+
+        
+    }
+
+    auto rc = llapi_ladvise(f, 0, nAdvises, advises);
+
+    if (rc != 0)
+    {
+        throw std::runtime_error("Error: Could not lock ahead:  " + std::string(strerror(errno))  );
+
+    }
 
 }
 
@@ -81,8 +129,9 @@ size_t posix_io::getInitialFileOffset(distributedCartesianArray & data) const
 
 }
 
-void posix_io::open(std::string filename, distributedCartesianArray & data, benchio::openMode mode )
+void posix_io::open(std::string filename, distributedCartesianArray & data, benchio::openMode mode_ )
 {
+    mode=mode_;
     auto posixMode = getPosixMode(mode);
 
     f = ::open( filename.c_str(), posixMode,0666 );
@@ -116,6 +165,11 @@ void posix_io::write( distributedCartesianArray & data)
     size_t current_bytes_write = 0;
     size_t counter=0;
     size_t currentChunkSize=0;
+
+    if (lockAhead)
+    {
+        setLockAhead(data);
+    }
 
     if (chunkSize > 0) 
     {

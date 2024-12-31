@@ -5,7 +5,7 @@ using real_t = double ;
 
 namespace benchio
 {
-    enum openMode { readMode, writeMode, readDirectMode, writeDirectMode };
+    enum openMode { readMode, writeMode, readDirectMode, writeDirectMode , unknown};
 };
 
 
