@@ -90,9 +90,15 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
         auto writer=  std::make_shared<posix_io>();
         auto chunkSize = benchmark["chunkSize"].as<size_t>( 0 );
         writer->setChunkSize(chunkSize);
-        auto strided = benchmark["strided"].as<bool>( 0 );
+        auto strided = benchmark["strided"].as<bool>( false );
         if (strided) writer->setStride();
-        
+        auto lockAhead = benchmark["lockAhead"].as<bool>( false );
+        auto waitLockAhead = benchmark["waitLockAhead"].as<bool>( false );
+
+        if (lockAhead) writer->setLockAhead();
+        if (waitLockAhead) writer->setWaitLockAhead();
+
+
         return writer;
 
     }

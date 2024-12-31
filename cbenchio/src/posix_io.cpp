@@ -47,9 +47,11 @@ void posix_io::setStride()
 
 }
 
-
 void posix_io::setLockAhead(distributedCartesianArray & data)
 {
+    const int max_attempts_wait_lock=100;
+
+
     struct llapi_lu_ladvise * advises;
 
     size_t nAdvises=data.getLocalSize()/chunkSize;
@@ -76,15 +78,22 @@ void posix_io::setLockAhead(distributedCartesianArray & data)
 
         }
 
-
         advises[i].lla_advice = LU_LADVISE_LOCKAHEAD;
-        advises[i].lla_value2= 0;
         advises[i].lla_value4= 0;
-        advises[i].lla_lockahead_result = 545785; // set to an arbitrary non zero number, to set the result of lockahead;
+        advises[i].lla_lockahead_result = 545785; // set to an arbitrary non zero number, to check the result of ladvise;
+        advises[i].lla_peradvice_flags= LF_ASYNC;
 
+        offset+= chunkSize + getStride(data);
         
+
     }
 
+
+    size_t nLocksGranted=0;
+    size_t nLocksGrantedSame=0;
+    size_t nLocksGrantedDiff=0;
+
+     
     auto rc = llapi_ladvise(f, 0, nAdvises, advises);
 
     if (rc != 0)
@@ -92,6 +101,57 @@ void posix_io::setLockAhead(distributedCartesianArray & data)
         throw std::runtime_error("Error: Could not lock ahead:  " + std::string(strerror(errno))  );
 
     }
+    if (waitLockAhead)
+    {
+        MPI_Barrier(MPI_COMM_WORLD);
+
+        for (int i=0; i< max_attempts_wait_lock ;i++)
+        {
+        usleep(100000);
+
+            auto rc = llapi_ladvise(f, 0, nAdvises, advises);
+
+            if (rc != 0)
+            {
+                throw std::runtime_error("Error: Could not lock ahead:  " + std::string(strerror(errno))  );
+
+            }
+
+
+
+            nLocksGrantedSame=0;
+            nLocksGrantedDiff=0;
+            for(int ii=0;ii<nAdvises;ii++)
+            {
+                if (advises[ii].lla_lockahead_result == LLA_RESULT_DIFFERENT)
+                {
+                    nLocksGrantedDiff+=1;
+                } 
+                else if (advises[ii].lla_lockahead_result == LLA_RESULT_SAME)
+                {
+                    nLocksGrantedSame+=1;
+                }
+                else if (advises[ii].lla_lockahead_result != 0)
+                {
+                    throw std::runtime_error("Error: Unexpected lockahead error " + std::to_string(advises[ii].lla_lockahead_result) + " : " + std::string(strerror(errno)) );
+                }
+
+            }
+            nLocksGranted = nLocksGrantedSame + nLocksGrantedDiff;
+            if (nLocksGranted >= nAdvises) break;
+
+        }
+        std::cout << "Locks granted:" << nLocksGranted << "/" << nAdvises << ", different= " << nLocksGrantedDiff << ", same=" << nLocksGrantedSame << std::endl;
+
+    }    
+    
+    //std::cout << "Lock ahead" << std::endl;
+
+    // for(int i=0;i<nAdvises;i++)
+    // {
+    //     std::cout << i << " " << " " << advises[i].lla_start << " " << advises[i].lla_end << " " << advises[i].lla_lockahead_result << std::endl;
+
+    // }
 
 }
 
