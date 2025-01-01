@@ -26,8 +26,10 @@ class posix_io : public ctl_io
     void setChunkSize(size_t aligment);
     void setStride();
     void setLockAhead(){lockAhead=true;}
-    void setWaitLockAhead(){waitLockAhead=true;}
+    void setWaitLockAhead(){ waitLockAhead= true;}
+    void setLockNoExpand(){ lockNoExpand= true;}
 
+    void setLockNoExpand(distributedCartesianArray & data);
     void setLockAhead(distributedCartesianArray & data);
 
 
@@ -42,7 +44,8 @@ class posix_io : public ctl_io
     size_t max_read_write_operations=100000;
     bool strided = false;
     bool lockAhead = false;
-    bool waitLockAhead=false;
+    bool waitLockAhead = false;
+    bool lockNoExpand = false;
 
     benchio::openMode mode = benchio::unknown;
 

@@ -40,6 +40,7 @@ auto getPosixMode( benchio::openMode mode)
     }
 }
 
+
 void posix_io::setStride()
 {
     strided=true;
@@ -47,14 +48,33 @@ void posix_io::setStride()
 
 }
 
+void posix_io::setLockNoExpand(distributedCartesianArray & data)
+{
+    struct llapi_lu_ladvise advise;
+    advise.lla_start = 0;
+    advise.lla_end = data.getGlobalSize()*sizeof(real_t);
+    advise.lla_advice = LU_LADVISE_LOCKNOEXPAND;
+    advise.lla_value1=0;
+    advise.lla_value2=0;
+    advise.lla_value3=0;
+    advise.lla_value4=0;
+    
+    auto rc = llapi_ladvise(f, 0, 1, &advise);
+
+    if (rc != 0)
+    {
+        throw std::runtime_error("Error: Could set lock to not expand:  " + std::string(strerror(errno))  );
+    }
+
+}
+
 void posix_io::setLockAhead(distributedCartesianArray & data)
 {
     const int max_attempts_wait_lock=100;
 
-
     struct llapi_lu_ladvise * advises;
 
-    size_t nAdvises=data.getLocalSize()/chunkSize;
+    size_t nAdvises=data.getLocalSize()*sizeof(real_t)/chunkSize;
     advises = new llapi_lu_ladvise[nAdvises];
     size_t offset = getInitialFileOffset(data);
 
@@ -225,11 +245,19 @@ void posix_io::write( distributedCartesianArray & data)
     size_t current_bytes_write = 0;
     size_t counter=0;
     size_t currentChunkSize=0;
+    
+
+    if (lockNoExpand)
+    {
+        setLockNoExpand(data);
+    }
 
     if (lockAhead)
     {
         setLockAhead(data);
     }
+
+
 
     if (chunkSize > 0) 
     {

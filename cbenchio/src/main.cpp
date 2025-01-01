@@ -94,10 +94,12 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
         if (strided) writer->setStride();
         auto lockAhead = benchmark["lockAhead"].as<bool>( false );
         auto waitLockAhead = benchmark["waitLockAhead"].as<bool>( false );
+        auto lockNoExpand = benchmark["lockNoExpand"].as<bool>( false );
 
         if (lockAhead) writer->setLockAhead();
         if (waitLockAhead) writer->setWaitLockAhead();
-
+        if (lockNoExpand) writer->setLockNoExpand();
+        
 
         return writer;
 
