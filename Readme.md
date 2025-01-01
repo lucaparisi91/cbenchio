@@ -13,21 +13,21 @@ An example configuration file can found in config.yaml .
     Allowed values: hdf5, posix, mpio
 - path: string
     - Path where to write to the file. The directory should exist
-- isCollective: bool
+- isCollective[true]: bool
     - Only falid for parallel io. Wether to use collective or indipendent MPI calls.
 - filePerProcess: bool
     - If false write to a single file. Otherwise write to multiple file
-- shape: array int of length 3
-    - Shape of the 3D array to write to memory
-- processorGid: array of 3 integers, default [0,0,0]
-    - Processor grid size
+- shape: int array
+    - Shape of the 3D array to write to memory. The length of the array must be 3.
+- processorGid[[0,0,0]]: int array
+    - Shape of the procressor grid. The length of the array must be 3.
 - operation: string
     Either "read" or "write    
-- direct: bool, default is false
-    Perform direct I/O
-- alignment: bool, default is zero
-    Allocates memory aligned array. The read/write posix calls will be splits in calls of max size equal to the alignment
-- lockAhead[ false]: bool
+- direct[false]: bool
+    - Perform direct I/O
+- alignment[0]: int
+    - Allocates memory aligned array. The read/write posix calls will be splits in calls of max size equal to the alignment
+- lockAhead[false]: bool
     - Uses lustre lockahead feature
 - waitLockAhead[false]: bool
     - Wait for a fixed amount of time to see if the client gets the requested locks. Prints how many locks were granted when the waiting period expires
