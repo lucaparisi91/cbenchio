@@ -27,6 +27,16 @@ An example configuration file can found in config.yaml .
     Perform direct I/O
 - alignment: bool, default is zero
     Allocates memory aligned array. The read/write posix calls will be splits in calls of max size equal to the alignment
+- lockAhead[ false]: bool
+    - Uses lustre lockahead feature
+- waitLockAhead[false]: bool
+    - Wait for a fixed amount of time to see if the client gets the requested locks. Prints how many locks were granted when the waiting period expires
+- lockNoExpand[false] : bool
+    - Advise to not expand locks on the whole file
+- chunkSize[0]: int
+    - Number of bytes to read/write per operation
+- strided[false] : bool
+    - Chunks written by different processors are interleaved.
 
 ## Build on Archer2
 
