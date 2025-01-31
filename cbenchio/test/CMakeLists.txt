@@ -48,6 +48,11 @@ add_parallel_test( test_hdf5 1)
 add_parallel_test( test_hdf5 2)
 add_parallel_test( test_hdf5 4)
 
+add_test_executable( test_netcdf)
+add_parallel_test( test_netcdf 1)
+add_parallel_test( test_netcdf 2)
+add_parallel_test( test_netcdf 4)
+
 add_test_executable( test_std_io )
 add_parallel_test( test_std_io 1)
 
