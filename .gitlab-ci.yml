@@ -27,7 +27,7 @@ build-cbenchio:
     - VERBOSE=1 make -j 4
     - make
 
-run_mpi_test:
+run_integration_test:
   stage: test
   needs: 
     - job: build-cbenchio
@@ -40,130 +40,133 @@ run_mpi_test:
     SLURM_nodes: 1
     SLURM_tasks_per_node: 40
     SLURM_exclusive: "TRUE"
+  
+  parallel:
+    matrix: 
+      - CONFIG_FILE: ["mpi.y" ]
   script:
     - pwd
     - module load PrgEnv-gnu
     - module load cray-hdf5-parallel
     - module load cray-netcdf-hdf5parallel
-    - cp examples/mpi.yaml config.yaml
+    - cp examples/$CONFIG_FILE config.yaml
     - mkdir -p data
     - srun build/src/benchio
 
 
 
-run_hdf5_test:
-  stage: test
-  needs: 
-    - job: build-cbenchio
-      artifacts: true
+# run_hdf5_test:
+#   stage: test
+#   needs: 
+#     - job: build-cbenchio
+#       artifacts: true
   
   
-  variables:
-    ON_COMPUTE: "TRUE"
-    SLURM_time: "00:05:00"
-    SLURM_nodes: 1
-    SLURM_tasks_per_node: 40
-    SLURM_exclusive: "TRUE"
-  script:
-    - pwd
-    - module load PrgEnv-gnu
-    - module load cray-hdf5-parallel
-    - module load cray-netcdf-hdf5parallel
-    - cp examples/hdf5.yaml config.yaml
-    - mkdir -p data
-    - srun build/src/benchio
+#   variables:
+#     ON_COMPUTE: "TRUE"
+#     SLURM_time: "00:05:00"
+#     SLURM_nodes: 1
+#     SLURM_tasks_per_node: 40
+#     SLURM_exclusive: "TRUE"
+#   script:
+#     - pwd
+#     - module load PrgEnv-gnu
+#     - module load cray-hdf5-parallel
+#     - module load cray-netcdf-hdf5parallel
+#     - cp examples/hdf5.yaml config.yaml
+#     - mkdir -p data
+#     - srun build/src/benchio
   
-run_posix_test:
-  stage: test
-  needs: 
-    - job: build-cbenchio
-      artifacts: true
+# run_posix_test:
+#   stage: test
+#   needs: 
+#     - job: build-cbenchio
+#       artifacts: true
 
 
-  variables:
-    ON_COMPUTE: "TRUE"
-    SLURM_time: "00:05:00"
-    SLURM_nodes: 1
-    SLURM_tasks_per_node: 1
-    SLURM_exclusive: "TRUE"
-  script:
-    - pwd
-    - module load PrgEnv-gnu
-    - module load cray-hdf5-parallel
-    - module load cray-netcdf-hdf5parallel
-    - cp examples/posix.yaml config.yaml
-    - mkdir -p data
-    - srun build/src/benchio
+#   variables:
+#     ON_COMPUTE: "TRUE"
+#     SLURM_time: "00:05:00"
+#     SLURM_nodes: 1
+#     SLURM_tasks_per_node: 1
+#     SLURM_exclusive: "TRUE"
+#   script:
+#     - pwd
+#     - module load PrgEnv-gnu
+#     - module load cray-hdf5-parallel
+#     - module load cray-netcdf-hdf5parallel
+#     - cp examples/posix.yaml config.yaml
+#     - mkdir -p data
+#     - srun build/src/benchio
 
 
-run_posix_direct_test:
-  stage: test
-  needs: 
-    - job: build-cbenchio
-      artifacts: true
+# run_posix_direct_test:
+#   stage: test
+#   needs: 
+#     - job: build-cbenchio
+#       artifacts: true
 
 
-  variables:
-    ON_COMPUTE: "TRUE"
-    SLURM_time: "00:05:00"
-    SLURM_nodes: 1
-    SLURM_tasks_per_node: 1
-    SLURM_exclusive: "TRUE"
-  script:
-    - pwd
-    - module load PrgEnv-gnu
-    - module load cray-hdf5-parallel
-    - module load cray-netcdf-hdf5parallel
-    - cp examples/posixDirect.yaml config.yaml
-    - mkdir -p data
-    - srun build/src/benchio
+#   variables:
+#     ON_COMPUTE: "TRUE"
+#     SLURM_time: "00:05:00"
+#     SLURM_nodes: 1
+#     SLURM_tasks_per_node: 1
+#     SLURM_exclusive: "TRUE"
+#   script:
+#     - pwd
+#     - module load PrgEnv-gnu
+#     - module load cray-hdf5-parallel
+#     - module load cray-netcdf-hdf5parallel
+#     - cp examples/posixDirect.yaml config.yaml
+#     - mkdir -p data
+#     - srun build/src/benchio
 
 
-run_posix_strided_test:
-  stage: test
-  needs: 
-    - job: build-cbenchio
-      artifacts: true
+# run_posix_strided_test:
+#   stage: test
+#   needs: 
+#     - job: build-cbenchio
+#       artifacts: true
 
 
-  variables:
-    ON_COMPUTE: "TRUE"
-    SLURM_time: "00:05:00"
-    SLURM_nodes: 1
-    SLURM_tasks_per_node: 1
-    SLURM_exclusive: "TRUE"
-  script:
-    - pwd
-    - module load PrgEnv-gnu
-    - module load cray-hdf5-parallel
-    - module load cray-netcdf-hdf5parallel
-    - cp examples/posixStrided.yaml config.yaml
-    - mkdir -p data
-    - srun build/src/benchio
+#   variables:
+#     ON_COMPUTE: "TRUE"
+#     SLURM_time: "00:05:00"
+#     SLURM_nodes: 1
+#     SLURM_tasks_per_node: 1
+#     SLURM_exclusive: "TRUE"
+#   script:
+#     - pwd
+#     - module load PrgEnv-gnu
+#     - module load cray-hdf5-parallel
+#     - module load cray-netcdf-hdf5parallel
+#     - cp examples/posixStrided.yaml config.yaml
+#     - mkdir -p data
+#     - srun build/src/benchio
 
-run_posix_lock_ahead_test:
-  stage: test
-  needs: 
-    - job: build-cbenchio
-      artifacts: true
+# run_posix_lock_ahead_test:
+#   stage: test
+#   needs: 
+#     - job: build-cbenchio
+#       artifacts: true
 
 
-  variables:
-    ON_COMPUTE: "TRUE"
-    SLURM_time: "00:05:00"
-    SLURM_nodes: 1
-    SLURM_tasks_per_node: 4
-    SLURM_exclusive: "TRUE"
-  script:
-    - pwd
-    - module load PrgEnv-gnu
-    - module load cray-hdf5-parallel
-    - module load cray-hdf5-parallel
-    - module load cray-netcdf-hdf5parallel
-    - module load cray-netcdf-hdf5parallel
-    - cp examples/posixLockAhead.yaml config.yaml
-    - mkdir -p data
-    - srun build/src/benchio
+#   variables:
+#     ON_COMPUTE: "TRUE"
+#     SLURM_time: "00:05:00"
+#     SLURM_nodes: 1
+#     SLURM_tasks_per_node: 4
+#     SLURM_exclusive: "TRUE"
+#   script:
+#     - pwd
+#     - module load PrgEnv-gnu
+#     - module load cray-hdf5-parallel
+#     - module load cray-hdf5-parallel
+#     - module load cray-netcdf-hdf5parallel
+#     - cp examples/posixLockAhead.yaml config.yaml
+#     - mkdir -p data
+#     - srun build/src/benchio
 
 
 run_unit_tests:
