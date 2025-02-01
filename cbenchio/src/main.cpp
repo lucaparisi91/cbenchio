@@ -9,6 +9,8 @@
 #include "mpi_io.h"
 #include "std_io.h"
 #include "hdf5_io.h"
+#include "netcdf_io.h"
+
 #include <filesystem>
 #include <fstream>
 
@@ -125,6 +127,15 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
     else  if (api == "hdf5")
     {
         auto writer=std::make_shared<hdf5_io>();
+        if (benchmark["isCollective"].as<bool>(true) == false )
+        {
+            writer->unSetCollective();
+        }
+        return writer;
+    }
+    else  if (api == "netcdf")
+    {
+        auto writer=std::make_shared<netcdf_io>();
         if (benchmark["isCollective"].as<bool>(true) == false )
         {
             writer->unSetCollective();

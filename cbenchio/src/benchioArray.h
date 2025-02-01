@@ -46,7 +46,7 @@ class benchioArray
     real_t sum( const benchioArray & data2);
 
     real_t distance( const benchioArray & data1, const benchioArray & data2);
-
+    
 
 
 #endif
