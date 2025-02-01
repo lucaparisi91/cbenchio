@@ -109,7 +109,7 @@ distributedCartesianArray::distributedCartesianArray( MPI_Comm comm_,std::array<
     
 }
 
-void distributedCartesianArray::print() const
+void distributedCartesianArray::print( bool collective) const
 {
     int rank,nRanks;
 
@@ -119,21 +119,24 @@ void distributedCartesianArray::print() const
     std::cout << "Array grid: " << globalShape[0] << " " << globalShape[1] << " " << globalShape[2] << std::endl;
     std::cout << "Processor grid: " << nRanksCartesian[0] << " " << nRanksCartesian[1] << " " << nRanksCartesian[2 ] << std::endl;
 
+    if (collective)
+    {
+    
+    for (int i=0; i< nRanks;i++)
+    {
 
-    // for (int i=0; i< nRanks;i++)
-    // {
+        if (i==rank)
+        {
+            std::cout << "Rank: " << rank ;
+            std::cout << ", Local Offset: " << localOffset[0] << " " << localOffset[1] << " " << localOffset[2] ;
+            std::cout << ", Local Shape: " << localShape[0] << " " << localShape[1] << " " << localShape[2] << std::endl;   
+        }
 
-    //     if (i==rank)
-    //     {
-    //         std::cout << "Rank: " << rank ;
-    //         std::cout << ", Local Offset: " << localOffset[0] << " " << localOffset[1] << " " << localOffset[2] ;
-    //         std::cout << ", Local Shape: " << localShape[0] << " " << localShape[1] << " " << localShape[2] << std::endl;   
-    //     }
+        MPI_Barrier(comm);
 
-    //     MPI_Barrier(comm);
+    }
 
-    // }
-
+    }
     
     
 

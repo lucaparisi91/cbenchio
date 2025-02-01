@@ -80,7 +80,7 @@ class distributedCartesianArray
     
     auto getNDimensions() const { return nDimensions;}
 
-    void print() const ;
+    void print(bool collective=false) const ;
 
     
     private:

@@ -1,6 +1,6 @@
 #include "netcdf_io.h"
 #include "netcdf_par.h"
-
+#include <iostream>
 #include <stdexcept>
 
 void netcdf_io::close( )
@@ -41,22 +41,18 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
         check(ret, "Create Data variable");
 
     }
-    else 
+    else
     {
         ret = nc_open_par(filename.c_str(), NC_NOWRITE, data.getCartesianCommunicator(), info, &fileId);
-
     }
-
- 
-
 
     if (isCollective)
     {
-        nc_var_par_access(fileId,dataId,NC_COLLECTIVE);
+        nc_var_par_access(fileId,NC_GLOBAL,NC_COLLECTIVE);
     }
     else 
     {
-        nc_var_par_access(fileId,dataId,NC_INDEPENDENT);
+        nc_var_par_access(fileId,NC_GLOBAL,NC_INDEPENDENT);
     }
 
 }   
@@ -65,7 +61,7 @@ void netcdf_io::write( distributedCartesianArray & data)
 {   
     ptrdiff_t stride[3] {1,1,1};
     ptrdiff_t imap[3] {1, (ptrdiff_t)(data.getLocalShape()[0]), (ptrdiff_t)(data.getLocalShape()[1] *data.getLocalShape()[0]) , };
-    
+        
     int ret = nc_put_varm_double( fileId, dataId, data.getLocalOffset().data(), data.getLocalShape().data(), stride,imap, data.getData().data() );
     check(ret,"Write netcdf variable");
 
@@ -78,7 +74,7 @@ void netcdf_io::read( distributedCartesianArray & data)
     
     int ret = nc_get_varm_double( fileId, dataId, data.getLocalOffset().data(), data.getLocalShape().data(), stride,imap, data.getData().data() );
     check(ret,"Read netcdf variable");
-       
+
 }
 
 void netcdf_io::sync()
