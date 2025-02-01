@@ -73,9 +73,12 @@ void netcdf_io::write( distributedCartesianArray & data)
 void netcdf_io::read( distributedCartesianArray & data)
 {   
     ptrdiff_t stride[3] {1,1,1};
-    ptrdiff_t imap[3] {1, (ptrdiff_t)(data.getLocalShape()[0]), (ptrdiff_t)(data.getLocalShape()[1] *data.getLocalShape()[0]) , };
+    ptrdiff_t imap[3] {(ptrdiff_t)(data.getLocalShape()[1] *data.getLocalShape()[0]), (ptrdiff_t)(data.getLocalShape()[0]), 1 };
+
+    size_t offset[3] { data.getLocalOffset()[2],data.getLocalOffset()[1],data.getLocalOffset()[0] } ;
+    size_t shape[3] { data.getLocalShape()[2],data.getLocalShape()[1],data.getLocalShape()[0] } ;
     
-    int ret = nc_get_varm_double( fileId, dataId, data.getLocalOffset().data(), data.getLocalShape().data(), stride,imap, data.getData().data() );
+    int ret = nc_get_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
     check(ret,"Read netcdf variable");
 
 }
