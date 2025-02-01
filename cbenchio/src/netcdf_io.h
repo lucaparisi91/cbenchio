@@ -24,5 +24,9 @@ class netcdf_io : public ctl_io
     private:
 
     bool isCollective=true;
-    
+    int fileId= 0;
+    int dimIds[3] ;
+    int dataId = 0;
+
+
 };

@@ -12,11 +12,6 @@ function ( add_parallel_test name_exec nRanks )
     add_test( ${name_exec}_n${nRanks} srun --cpus-per-task=1 --ntasks=${nRanks} ${name_exec} )
 endfunction()
 
-
-
-
-
-
 # add_executable(test_posix)
 # target_sources( test_posix PRIVATE test_posix_io.cpp  )
 # target_link_libraries( test_posix PUBLIC benchio++ )
