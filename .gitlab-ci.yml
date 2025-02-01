@@ -58,7 +58,7 @@ run_unit_tests:
       artifacts: true
   variables:
     ON_COMPUTE: "TRUE"
-    SLURM_time: "00:10:00"
+    SLURM_time: "00:04:00"
     SLURM_nodes: 1
     SLURM_tasks_per_node: 64
     SLURM_exclusive: "TRUE"
