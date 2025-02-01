@@ -31,11 +31,11 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
 
         check(ret, "Create Parallel");
 
-        ret = nc_def_dim(fileId,"x",data.getGlobalShape()[0],&dimIds[0]);
+        ret = nc_def_dim(fileId,"x",data.getGlobalShape()[0],&dimIds[2]);
         check(ret, "Create Dim x");
         ret = nc_def_dim(fileId,"y",data.getGlobalShape()[1],&dimIds[1]);
         check(ret, "Create Dim y");
-        ret = nc_def_dim(fileId,"z",data.getGlobalShape()[2],&dimIds[2]);
+        ret = nc_def_dim(fileId,"z",data.getGlobalShape()[2],&dimIds[0]);
         check(ret, "Create Dim z");
         ret = nc_def_var(fileId, "data", NC_DOUBLE, 3, dimIds, &dataId);
         check(ret, "Create Data variable");
@@ -55,14 +55,17 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
         nc_var_par_access(fileId,NC_GLOBAL,NC_INDEPENDENT);
     }
 
-}   
+}
 
 void netcdf_io::write( distributedCartesianArray & data) 
 {   
     ptrdiff_t stride[3] {1,1,1};
-    ptrdiff_t imap[3] {1, (ptrdiff_t)(data.getLocalShape()[0]), (ptrdiff_t)(data.getLocalShape()[1] *data.getLocalShape()[0]) , };
-        
-    int ret = nc_put_varm_double( fileId, dataId, data.getLocalOffset().data(), data.getLocalShape().data(), stride,imap, data.getData().data() );
+    ptrdiff_t imap[3] {(ptrdiff_t)(data.getLocalShape()[1] *data.getLocalShape()[0]), (ptrdiff_t)(data.getLocalShape()[0]), 1 };
+
+    size_t offset[3] { data.getLocalOffset()[2],data.getLocalOffset()[1],data.getLocalOffset()[0] } ;
+    size_t shape[3] { data.getLocalShape()[2],data.getLocalShape()[1],data.getLocalShape()[0] } ;
+    
+    int ret = nc_put_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
     check(ret,"Write netcdf variable");
 
 }
