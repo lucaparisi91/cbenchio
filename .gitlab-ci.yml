@@ -4,6 +4,10 @@ variables:
   SLURM_partition: standard
   SLURM_qos: short
 
+.setup_environment:  &setup_environment
+  - module load PrgEnv-gnu
+  - module load cray-hdf5-parallel
+  - module load cray-netcdf-hdf5parallel
 
 build-cbenchio:
   variables:
@@ -15,11 +19,10 @@ build-cbenchio:
       - build/src/benchio
       - build/test/test_*
   script:
+    - *setup_environment
     - mkdir -p build
     - cd build
-    - module load PrgEnv-gnu
-    - module load cray-hdf5-parallel
-    - module load cray-netcdf-hdf5parallel
+
     - CXX=CC CC=cc FC=ftn cmake ../cbenchio
     - VERBOSE=1 make -j 4
     - make
