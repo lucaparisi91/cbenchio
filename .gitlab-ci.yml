@@ -64,8 +64,6 @@ run_unit_tests:
     SLURM_exclusive: "TRUE"
   script:
     - pwd
-    - module load PrgEnv-gnu
-    - module load cray-hdf5-parallel
-    - module load cray-netcdf-hdf5parallel
+    - *setup_environment
     - cd build
     - ctest -VV
