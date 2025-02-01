@@ -183,4 +183,4 @@ run_unit_tests:
     - module load cray-hdf5-parallel
     - module load cray-netcdf-hdf5parallel
     - cd build
-    - ctest -v
+    - ctest -VV
