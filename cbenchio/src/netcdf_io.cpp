@@ -37,8 +37,7 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
         check(ret, "Create Dim y");
         ret = nc_def_dim(fileId,"z",data.getGlobalShape()[2],&dimIds[0]);
         check(ret, "Create Dim z");
-        ret = nc_def_var(fileId, "data", NC_DOUBLE, 3, dimIds, &dataId);
-        check(ret, "Create Data variable");
+     
 
     }
     else
@@ -59,27 +58,37 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
 
 void netcdf_io::write( distributedCartesianArray & data) 
 {   
+    int ret;
+    int dataId;
     ptrdiff_t stride[3] {1,1,1};
     ptrdiff_t imap[3] {(ptrdiff_t)(data.getLocalShape()[1] *data.getLocalShape()[0]), (ptrdiff_t)(data.getLocalShape()[0]), 1 };
 
     size_t offset[3] { data.getLocalOffset()[2],data.getLocalOffset()[1],data.getLocalOffset()[0] } ;
     size_t shape[3] { data.getLocalShape()[2],data.getLocalShape()[1],data.getLocalShape()[0] } ;
-    
-    int ret = nc_put_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
+
+    ret = nc_def_var(fileId, ("data" + std::to_string(currentField)).c_str() , NC_DOUBLE, 3, dimIds, &dataId);
+    check(ret, "Create Data variable");
+    ret = nc_put_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
     check(ret,"Write netcdf variable");
+    currentField++;
 
 }
 
 void netcdf_io::read( distributedCartesianArray & data)
 {   
+    int ret;
+    int dataId;
+    
     ptrdiff_t stride[3] {1,1,1};
     ptrdiff_t imap[3] {(ptrdiff_t)(data.getLocalShape()[1] *data.getLocalShape()[0]), (ptrdiff_t)(data.getLocalShape()[0]), 1 };
 
     size_t offset[3] { data.getLocalOffset()[2],data.getLocalOffset()[1],data.getLocalOffset()[0] } ;
     size_t shape[3] { data.getLocalShape()[2],data.getLocalShape()[1],data.getLocalShape()[0] } ;
-    
-    int ret = nc_get_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
+    nc_inq_varid(fileId,("data" + std::to_string(currentField)).c_str() ,&dataId );
+
+    ret = nc_get_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
     check(ret,"Read netcdf variable");
+    currentField+=1;
 
 }
 
