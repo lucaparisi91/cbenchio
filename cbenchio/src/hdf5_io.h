@@ -25,7 +25,8 @@ class hdf5_io : public ctl_io
     private:
 
     bool isCollective=true;
-    hid_t fileId,dsetId,fileSpaceId,memSpaceId,pListTransfer;
+    hid_t fileId,fileSpaceId,memSpaceId,pListTransfer;
+    int currentField=0;
 
     
 };

@@ -31,21 +31,31 @@ int main(int argc, char ** argv)
     hdf5_io writer, reader;
     writer.open("data.hdf5",data1,benchio::writeMode);
     writer.write(data1);
+    gen.generate(data1,1);
+    writer.write(data1);
+    
     writer.close();
 
 
     reader.open("data.hdf5",data2,benchio::readMode);
     
+    gen.generate(data1,0);
     reader.read(data2);
+    auto diff = distance(data2.getData(),data1.getData() );  
+    testing::check_near( diff, 0 , "Distance btw. read and write 1 on rank " + std::to_string(rank) );
+
+    gen.generate(data1,1);
+    reader.read(data2);
+    diff = distance(data2.getData(),data1.getData() );  
+    testing::check_near( diff, 0 , "Distance btw. read and write 2 on rank " + std::to_string(rank) );
+    
 
     reader.close();
 
 
-    auto diff = distance(data2.getData(),data1.getData() );  
+    
    
-    std::cout << diff << std::endl;
 
-   testing::check_near( diff, 0 , "Distance btw. read and write " );
 
    MPI_Finalize();
 
