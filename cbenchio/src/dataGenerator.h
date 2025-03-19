@@ -9,9 +9,9 @@
 class indexDataGenerator
 {
     public:
-    
-    void generate( distributedCartesianArray & disData);
 
+    void generate( distributedCartesianArray & disData,double offset=0);
+    
 };
 
 /* class dataGenerator

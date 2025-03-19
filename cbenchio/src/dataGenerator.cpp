@@ -1,7 +1,7 @@
 #include "dataGenerator.h"
 #include <iostream>
 
-void indexDataGenerator::generate( distributedCartesianArray & disData)
+void indexDataGenerator::generate( distributedCartesianArray & disData,real_t offset)
 {
     using index_t = distributedCartesianArray::index_t ;
     auto & localData = disData.getData();
@@ -18,7 +18,7 @@ void indexDataGenerator::generate( distributedCartesianArray & disData)
                 auto jg = j + localOffset[1];
                 auto kg = k + localOffset[2];
 
-                localData((signed long int)i,(signed long int)j,(signed long int)k)=ig*ig + jg*jg + kg*kg;
+                localData((signed long int)i,(signed long int)j,(signed long int)k)=ig*ig + jg*jg + kg*kg + offset;
             }   
         }
 
