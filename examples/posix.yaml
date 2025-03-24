@@ -12,6 +12,7 @@ benchmarks:
         operation: "write"
         direct: false
         alignment: 0
+        nFields: 4
     -
         name: "read and check"
         API: "posix"
@@ -24,3 +25,4 @@ benchmarks:
         alignment: 0
         direct: false
         operation: "read"
+        nFields: 4

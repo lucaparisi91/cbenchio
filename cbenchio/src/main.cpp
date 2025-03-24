@@ -188,6 +188,7 @@ int main(int argc, char ** argv)
         auto repeat = benchmarkNode["repeat"].as<int>(1);
         auto sync = benchmarkNode["sync"].as<bool>(false);  
         auto operation = benchmarkNode["operation"].as<std::string>("write");
+        auto nFields = benchmarkNode["fields"].as<size_t>(1);
         
 
         if (rank==0)
@@ -256,13 +257,14 @@ int main(int argc, char ** argv)
                     benchmark current_benchmark( name  );
                     current_benchmark.setFileSync(sync);
                     current_benchmark.setOperation(operation);
-
+                    current_benchmark.setNFields(nFields);
                     if (rank==0) {
                         std::cout << "---------------------" <<std::endl;
                     }
-
+                    
                     current_benchmark.write(*data, *writer);
-
+                    
+                    
                     writer->close();
 
                     auto response = current_benchmark.report_yaml() ;
