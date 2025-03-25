@@ -11,7 +11,6 @@ auto to_hsize(std::array<T,3> dims)
 
 void hdf5_io::close( )
 {
-    H5Dclose(dsetId);
     H5Sclose(fileSpaceId);
     H5Sclose(memSpaceId);
     H5Fclose(fileId);
@@ -49,11 +48,9 @@ void hdf5_io::open( std::string filename,  distributedCartesianArray & data, ben
     fileSpaceId=H5Screate_simple(3, dims.begin(), NULL);
     if ( mode == benchio::writeMode)
     {
-        dsetId = H5Dcreate(fileId, "data", H5T_NATIVE_DOUBLE, fileSpaceId, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     }
     else 
     {
-        dsetId = H5Dopen(fileId, "data", H5P_DEFAULT);
 
     }
     
@@ -81,15 +78,19 @@ void hdf5_io::open( std::string filename,  distributedCartesianArray & data, ben
 }
 
 void hdf5_io::write( distributedCartesianArray & data) 
-{   
+{
+    auto dsetId = H5Dcreate(fileId, ("data" + std::to_string(currentField)).c_str(), H5T_NATIVE_DOUBLE, fileSpaceId, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     auto status = H5Dwrite(dsetId, H5T_NATIVE_DOUBLE, memSpaceId, fileSpaceId, pListTransfer, data.getData().data() );
-
+    H5Dclose(dsetId);
+    currentField++;
 }
 
 void hdf5_io::read( distributedCartesianArray & data)
-{   
+{
+    auto dsetId = H5Dopen(fileId, ("data" + std::to_string(currentField)).c_str(), H5P_DEFAULT);
     auto status = H5Dread(dsetId, H5T_NATIVE_DOUBLE, memSpaceId, fileSpaceId, pListTransfer, data.getData().data() );
-
+    H5Dclose(dsetId);
+    currentField++;
 }
 
 void hdf5_io::sync()

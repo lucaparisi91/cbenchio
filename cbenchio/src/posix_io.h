@@ -48,7 +48,7 @@ class posix_io : public ctl_io
     bool lockNoExpand = false;
 
     benchio::openMode mode = benchio::unknown;
-
+    size_t currentField=0;
 };
 
 

@@ -28,22 +28,28 @@ int main(int argc, char ** argv)
     netcdf_io writer, reader;
     writer.open("data.nc",data1,benchio::writeMode);
     writer.write(data1);
+    gen.generate(data1,1);
+    writer.write(data1);
+    
     writer.close();
 
 
     reader.open("data.nc",data2,benchio::readMode);
         
     reader.read(data2);
+    gen.generate(data1,0);
+    auto diff = distance(data2.getData(),data1.getData() );  
+    testing::check_near( diff, 0 , "Distance read/write 1 on rank " + std::to_string(rank) );
+
+    reader.read(data2);
+    gen.generate(data1,1);
+    diff = distance(data2.getData(),data1.getData() );  
+    testing::check_near( diff, 0 , "Distance read/write 2 on rank " + std::to_string(rank) );
 
     reader.close();
 
 
-    auto diff = distance(data2.getData(),data1.getData() );  
    
-    std::cout << diff << std::endl;
-
-    testing::check_near( diff, 0 , "Distance btw. read and write " );
-
     MPI_Finalize();
 
 }

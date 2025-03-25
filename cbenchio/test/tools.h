@@ -60,6 +60,22 @@ namespace testing
     }
 
 
+    void check_near(const distributedCartesianArray & data,const distributedCartesianArray & data2,const std::string & msg )
+    {
+        int rank;
+        real_t diff_local = distance( data.getData(),data2.getData() );  
+        real_t diff_global;
+        MPI_Reduce( &diff_local, &diff_global , 1 , MPI_DOUBLE, MPI_SUM, 0 , MPI_COMM_WORLD );
+        
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+        if (rank ==0)
+        {
+            check_near( diff_global,0 , msg) ;
+        }
+
+    }
+    
 
 }
 

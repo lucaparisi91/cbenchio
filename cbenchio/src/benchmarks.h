@@ -14,12 +14,12 @@ class benchmark
 
     void write( data_t & data, ioCtl_t & ctl );    
 
-    std::string report();
 
     YAML::Node report_yaml();
 
     void setFileSync( bool _sync) { sync = _sync; }
     void setOperation(std::string op) { operation=op;   }
+    void setNFields(size_t n ){nFields=n;} ;
 
     private:
 
@@ -29,4 +29,6 @@ class benchmark
     real_t sizeTransferred;
     bool sync;
     std::string operation;
+    int nFields=1;
+
 };

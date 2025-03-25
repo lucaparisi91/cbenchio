@@ -29,6 +29,5 @@ class mpi_io : public ctl_io
     MPI_File fh;    
     MPI_Datatype subArrayDataType;
     bool isCollective=true;
-
-    
+    MPI_Offset offset=0;
 };

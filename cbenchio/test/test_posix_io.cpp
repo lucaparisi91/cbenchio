@@ -23,15 +23,15 @@ int main(int argc, char ** argv)
     distributedCartesianArray data(MPI_COMM_WORLD, { 100, 1, 1  });
 
     indexDataGenerator gen;
-    gen.generate(data);
-
-
-
     posix_io ioCtl;
 
     timer writeTime;
     timer readTime;
     ioCtl.open("data.out",data,benchio::writeMode);
+    
+    gen.generate(data);
+    ioCtl.write(data);
+    gen.generate(data,1);
     ioCtl.write(data);
 
     distributedCartesianArray data2(MPI_COMM_WORLD, { 100, 1, 1  });
@@ -40,44 +40,16 @@ int main(int argc, char ** argv)
     ioCtl.open("data.out",data,benchio::readMode);
     
     ioCtl.read(data2);
+    gen.generate(data);
+    testing::check_near(data,data2,"write/read data distance 1");
+    ioCtl.read(data2);
+    gen.generate(data,1);
+    testing::check_near(data,data2,"write/read data distance 2");
+
     ioCtl.close();
 
-
-    real_t diff_local = distance( data.getData(),data2.getData() );  
-    real_t diff_global;
-    MPI_Reduce( &diff_local, &diff_global , 1 , MPI_DOUBLE, MPI_SUM, 0 , MPI_COMM_WORLD );
-
-    if (rank ==0)
-    {
-        testing::check_near( diff_global,0 , "write/read distance null") ;
-    }
-
-    // readTime.computeMaxElapsed();
     
-    // if (rank == 0)
-    // {
-    //     auto globalDataSizeGB = data2.size()*nRanks*sizeof(real_t) / 1.e+9;
-    //     std::cout << "Data Size: " << globalDataSizeGB << "GB" << std::endl;
-    //     std::cout << "N. ranks: " << nRanks << std::endl;
-    //     std::cout << "BW: " << globalDataSizeGB/readTime.maxElapsed()  << " GB/s" << std::endl;
-
-
-    // }
-
-    // if ( data.size() !=  data2.size() )
-    // {
-    //     exit(1);
-    // }
-
-    // real_t diff=0;
-    // for(int i=0;i<data.size();i++)
-    // {
-    //     diff+=std::abs(data[i] - data2[i]);
-    // }
-
     
-    // if (diff> 0 ) exit(1);
-
     MPI_Finalize();
 
 }

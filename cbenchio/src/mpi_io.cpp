@@ -50,29 +50,25 @@ void mpi_io::open(std::string filename, distributedCartesianArray & data, benchi
 
     MPI_File_set_view( fh, disp, MPI_DOUBLE, subArrayDataType, "native" , MPI_INFO_NULL );
 
-
-
 }
 
 void mpi_io::read( distributedCartesianArray & data) 
 {
-    //MPI_Offset disp=0;
-
-    // initFileDataType(data,subArrayDataType);
-    
-    // MPI_File_open( MPI_COMM_WORLD, basename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &fh );
-    // MPI_File_set_view( fh, disp, MPI_DOUBLE, subArrayDataType, "native" , MPI_INFO_NULL );
     int ret;
 
+
     if (isCollective)
-        ret=MPI_File_read_all(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);   
+        ret=MPI_File_read_at_all(fh, offset, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);   
     else 
-        ret=MPI_File_read(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
+        ret=MPI_File_read_at(fh, offset, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
 
     if (ret!=MPI_SUCCESS)
     {
         throw std::runtime_error("MPI file read did not succeed." );
     }
+
+    offset+= sizeof(real_t) * data.getGlobalSize();
+
 }
 
 
@@ -87,24 +83,23 @@ void mpi_io::close()
 
 void mpi_io::write( distributedCartesianArray & data) 
 {
+
     int ret;
     if (isCollective)
     {
-        ret=MPI_File_write_all(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
+        ret=MPI_File_write_at_all(fh,offset, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
     }
     else 
     {
-        ret= MPI_File_write(fh, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
+        ret= MPI_File_write_at(fh, offset, data.getData().data(), data.getLocalSize(), MPI_DOUBLE, MPI_STATUS_IGNORE);
     }
     
     if (ret!=MPI_SUCCESS)
     {
         throw std::runtime_error("MPI file write did not succeed." );
     }
-    
-   // MPI_File_close(&fh );
-   // finalizeFileDataType(subArrayDataType);
 
+   offset+= sizeof(real_t) * data.getGlobalSize();
 }
 
 void mpi_io::sync()
@@ -114,5 +109,5 @@ void mpi_io::sync()
     {
         throw std::runtime_error("Could not sync file with MPI.");
     };
-
+    
 }

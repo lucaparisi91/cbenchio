@@ -186,7 +186,7 @@ size_t posix_io::getStride(distributedCartesianArray & data) const
         return chunkSize * (nRanks-1);
 
     }
-    else 
+    else
     {
         return 0;
     }
@@ -195,8 +195,10 @@ size_t posix_io::getStride(distributedCartesianArray & data) const
 
 size_t posix_io::getInitialFileOffset(distributedCartesianArray & data) const
 {
+
+    auto fieldOffset = currentField * data.getGlobalSize()*sizeof(real_t);
     if ( not strided) {
-        return data.getLocalOffset()[0]*sizeof(real_t);
+        return data.getLocalOffset()[0]*sizeof(real_t) + fieldOffset;
     }
     else
     {
@@ -204,7 +206,7 @@ size_t posix_io::getInitialFileOffset(distributedCartesianArray & data) const
 
         MPI_Comm_rank( data.getCartesianCommunicator() , &rank );
 
-        return chunkSize*rank;
+        return chunkSize*rank + fieldOffset;
     };
 
 }
@@ -221,12 +223,8 @@ void posix_io::open(std::string filename, distributedCartesianArray & data, benc
         throw std::runtime_error("Error: Could not open POSIX file.");
     }
 
-    off_t ret=lseek( f, getInitialFileOffset(data), SEEK_SET );
-    
-    if (ret<0 )
-    {
-        throw std::runtime_error("Error: Could not seek to the file offset");
-    }
+
+    currentField=0;
 
 };
 
@@ -245,6 +243,13 @@ void posix_io::write( distributedCartesianArray & data)
     size_t current_bytes_write = 0;
     size_t counter=0;
     size_t currentChunkSize=0;
+
+    off_t ret=lseek( f, getInitialFileOffset(data), SEEK_SET );
+    
+    if (ret<0 )
+    {
+        throw std::runtime_error("Error: Could not seek to the file offset");
+    }
     
 
     if (lockNoExpand)
@@ -299,13 +304,13 @@ void posix_io::write( distributedCartesianArray & data)
         }
     }
 
-    
+    currentField++;    
 }
 
 void posix_io::close()
 {
     ::close(f);
-
+    currentField=0;
 }
 
 void posix_io::sync()
@@ -327,6 +332,14 @@ void posix_io::read( distributedCartesianArray & data)
     size_t current_bytes_read = 0;
     size_t counter=0;
     size_t currentChunkSize=0;
+
+    off_t ret=lseek( f, getInitialFileOffset(data), SEEK_SET );
+    
+    if (ret<0 )
+    {
+        throw std::runtime_error("Error: Could not seek to the file offset");
+    }
+    
 
     if (chunkSize > 0) 
     {
@@ -374,5 +387,5 @@ void posix_io::read( distributedCartesianArray & data)
 
     }
 
-
+    currentField++;
 }
