@@ -1,6 +1,6 @@
 variables:
   SLURM_job_name: gitlab-ci
-  SLURM_account: z19
+  SLURM_account: n02-NGARCH
   SLURM_partition: standard
   SLURM_qos: short
 
