@@ -107,7 +107,10 @@ void mpi_io::sync()
     auto ret = MPI_File_sync(fh);
     if (ret!=MPI_SUCCESS)
     {
-        throw std::runtime_error("Could not sync file with MPI.");
+        char msg[MPI_MAX_ERROR_STRING];
+        int resultlen;
+        MPI_Error_string(ret, msg, &resultlen);
+        throw std::runtime_error("Could not sync file with MPI: " + std::string(msg));
     };
     
 }
