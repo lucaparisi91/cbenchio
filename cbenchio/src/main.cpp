@@ -249,11 +249,11 @@ int main(int argc, char ** argv)
         {
             for ( auto basename : basenames)
                 {
-                                    
+                    basename=basename + "T"+std::to_string(i);
                     auto writer = createWriter(benchmarkNode);
-
+                    
                     writer->open(basename,*data,mode);
-                        
+                    
                     benchmark current_benchmark( name  );
                     current_benchmark.setFileSync(sync);
                     current_benchmark.setOperation(operation);
