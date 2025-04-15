@@ -45,14 +45,8 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
         ret = nc_open_par(filename.c_str(), NC_NOWRITE, data.getCartesianCommunicator(), info, &fileId);
     }
 
-    if (isCollective)
-    {
-        nc_var_par_access(fileId,NC_GLOBAL,NC_COLLECTIVE);
-    }
-    else 
-    {
-        nc_var_par_access(fileId,NC_GLOBAL,NC_INDEPENDENT);
-    }
+
+ 
 
 }
 
@@ -65,9 +59,19 @@ void netcdf_io::write( distributedCartesianArray & data)
 
     size_t offset[3] { data.getLocalOffset()[2],data.getLocalOffset()[1],data.getLocalOffset()[0] } ;
     size_t shape[3] { data.getLocalShape()[2],data.getLocalShape()[1],data.getLocalShape()[0] } ;
-
+    
     ret = nc_def_var(fileId, ("data" + std::to_string(currentField)).c_str() , NC_DOUBLE, 3, dimIds, &dataId);
     check(ret, "Create Data variable");
+
+    if (isCollective)
+    {
+        nc_var_par_access(fileId,dataId,NC_COLLECTIVE);
+    }
+    else 
+    {
+        nc_var_par_access(fileId,dataId,NC_INDEPENDENT);
+    }
+    
     ret = nc_put_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
     check(ret,"Write netcdf variable");
     currentField++;
@@ -86,10 +90,20 @@ void netcdf_io::read( distributedCartesianArray & data)
     size_t shape[3] { data.getLocalShape()[2],data.getLocalShape()[1],data.getLocalShape()[0] } ;
     nc_inq_varid(fileId,("data" + std::to_string(currentField)).c_str() ,&dataId );
 
+    if (isCollective)
+    {
+        nc_var_par_access(fileId,dataId,NC_COLLECTIVE);
+    }
+    else 
+    {
+        nc_var_par_access(fileId,dataId,NC_INDEPENDENT);
+    }
+
+
     ret = nc_get_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
     check(ret,"Read netcdf variable");
     currentField+=1;
-
+    
 }
 
 void netcdf_io::sync()
