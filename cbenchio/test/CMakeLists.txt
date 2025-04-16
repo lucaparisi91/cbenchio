@@ -64,4 +64,4 @@ add_parallel_test( test_benchio_array_aligned 1)
 
 add_test_executable( test_pool )
 add_parallel_test( test_pool 5)
-set_tests_properties(test_pool_5 PROPERTIES WILL_FAIL )
+set_tests_properties(test_pool_n5 PROPERTIES WILL_FAIL True )
