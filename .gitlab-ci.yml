@@ -27,12 +27,23 @@ build-cbenchio:
     - VERBOSE=1 make -j 4
     - make
 
-run_integration_test:
-  stage: test
+
+integration_tests:
+  variables:
+    ON_COMPUTE: "FALSE"
   when: manual
   needs: 
     - job: build-cbenchio
       artifacts: true
+  script:
+    - echo "Run integration tests" 
+
+run_integration_test:
+  stage: test
+  needs: 
+    - job: build-cbenchio
+      artifacts: true
+    - job: integration_tests
   
   
   variables:
