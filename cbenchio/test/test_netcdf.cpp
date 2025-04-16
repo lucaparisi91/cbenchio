@@ -9,8 +9,8 @@
 
 int main(int argc, char ** argv)
 {
-    const std::array<size_t,3> globalShape { 10,5, 1};
-
+    const std::array<size_t,3> globalShape { 10,4, 1};
+    
     int rank=-1, nRanks=-1;
 
     MPI_Init( &argc , & argv);
@@ -26,14 +26,18 @@ int main(int argc, char ** argv)
     gen.generate(data1);
     
     netcdf_io writer, reader;
+
     writer.open("data.nc",data1,benchio::writeMode);
+    writer.setCollective();
     writer.write(data1);
     gen.generate(data1,1);
+
     writer.write(data1);
     
     writer.close();
 
-
+    std::cout << "start reading" << std::endl;
+    
     reader.open("data.nc",data2,benchio::readMode);
         
     reader.read(data2);
