@@ -11,7 +11,7 @@ class pool
     auto getCommunicator(){return pool_communicator;}
 
     private:
-
+    
     std::string name;
     MPI_Comm pool_communicator;
 
