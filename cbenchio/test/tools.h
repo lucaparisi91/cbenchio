@@ -1,6 +1,12 @@
 #ifndef TOOLS_TEST_H
 #define TOOLS_TEST_H
 
+#include <iostream>
+#include <sstream>
+#include "../src/definitions.h"
+#include <array>
+#include "../src/data.h"
+
 namespace testing
 {
 

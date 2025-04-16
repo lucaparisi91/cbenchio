@@ -62,7 +62,7 @@ std::vector<std::string> createFileNames( const YAML::Node & benchmark)
 
     auto filePerProcess = benchmark["filePerProcess"].as<bool>(false);
     std::vector<std::string> filenames;
-
+    
     for ( auto pathItem : benchmark["paths"] )
     {
         auto filePath=std::filesystem::path(pathItem.as<std::string>("."));
@@ -276,7 +276,7 @@ int main(int argc, char ** argv)
                     {
                         //if (rank==0) std::cout << "Checking read data..." << std::endl;
                         bool isAlmostEqual= ( distance(data->getData(),valid_data->getData()) <= tol);
-
+                        
                         response["valid"]=isAlmostEqual;
                         
                         if (not isAlmostEqual)
