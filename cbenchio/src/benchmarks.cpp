@@ -33,7 +33,7 @@ void benchmark::write(data_t & data, ioCtl_t & ctl)
     }
     
     benchmarkTimer.end();
-
+    
     real_t localSizeTransferred=data.getLocalSize()*nFields;
     sizeTransferred=0;
     MPI_Reduce( &localSizeTransferred, &sizeTransferred , 1 , MPI_DOUBLE, MPI_SUM, 0 , MPI_COMM_WORLD );

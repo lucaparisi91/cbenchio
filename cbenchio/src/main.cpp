@@ -10,7 +10,7 @@
 #include "std_io.h"
 #include "hdf5_io.h"
 #include "netcdf_io.h"
-
+#include "pool.h"
 #include <filesystem>
 #include <fstream>
 
@@ -22,29 +22,18 @@ auto getName(const YAML::Node & benchmark)
 
 }
 
-auto createData( const YAML::Node & benchmark)
+auto createData( const MPI_Comm & comm, const YAML::Node & benchmark)
 {
-    auto comm = MPI_COMM_WORLD;
 
     int rank=-1, nRanks=-1;
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
 
-    auto filePerProcess = benchmark["filePerProcess"].as<bool>(false);
-    if ( filePerProcess)
-    {
-        comm=MPI_COMM_SELF;
-    }
-
+    
 
     auto shape = benchmark["shape"].as<std::array<size_t,3> >();
     auto processorGrid = benchmark["processorGrid"].as<std::array<int,3> >(std::array<int,3>{0,0,0});
-    
-    if (filePerProcess)
-    {
-        comm=MPI_COMM_SELF;
-    }
 
     auto alignment = benchmark["alignment"].as<size_t>(0);
 
@@ -52,29 +41,67 @@ auto createData( const YAML::Node & benchmark)
 
 };
 
-std::vector<std::string> createFileNames( const YAML::Node & benchmark)
+bool containsKey(const YAML::Node & benchmark,const std::string & key)
+{
+    for (auto node : benchmark)
+    {
+        if (node.first.as<std::string>() == key ) return true;
+    }
+    
+    return false;
+}
+
+auto createPool(const YAML::Node & benchmark)
+{
+    int rank=-1, nRanks=-1;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
+    int nProcessPerPool=-1;
+
+
+    if (containsKey(benchmark,"poolSize") )
+    {
+        nProcessPerPool=benchmark["poolSize"].as<int>(nRanks);
+    }
+    else
+    {
+        bool isFilePerProcess=benchmark["filePerProcess"].as<bool>(false);
+        if (isFilePerProcess)
+        {
+            nProcessPerPool=1;
+        }
+        else 
+        {
+            nProcessPerPool=nRanks;
+        }
+    }
+
+    if (containsKey(benchmark,"filePerProcess") && containsKey(benchmark,"poolSize") )
+    {
+        throw std::runtime_error("FilePerProcess and poolSize cannot be both defined");
+    }
+
+    
+    return pool(nProcessPerPool,MPI_COMM_WORLD,"pool");
+}
+
+std::vector<std::string> createFileNames( const pool & pool,std::vector<std::string> basePaths)
 {
     int rank=-1, nRanks=-1;
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
 
-
-    auto filePerProcess = benchmark["filePerProcess"].as<bool>(false);
+    //pathItem.as<std::string>(".")
+    //auto filePerProcess = benchmark["filePerProcess"].as<bool>(false);
     std::vector<std::string> filenames;
-    
-    for ( auto pathItem : benchmark["paths"] )
-    {
-        auto filePath=std::filesystem::path(pathItem.as<std::string>("."));
 
-        if ( filePerProcess)
-        {
-            filePath/= ("data" + std::to_string(rank) + ".out");
-        }
-        else 
-        {
-            filePath/= "data.out";
-        }
+    for ( auto basePath : basePaths )
+    {
+        auto filePath=std::filesystem::path();
+
+        filePath/= ("data_" + pool.getName() + ".out");
 
         filenames.push_back(filePath);
     }
@@ -168,13 +195,12 @@ int main(int argc, char ** argv)
     for ( const auto node : config["benchmarks"])
     {
         auto benchmarkNode=node;
-        
+        auto benchmarkPool=createPool( benchmarkNode );
 
-        auto basenames = createFileNames(benchmarkNode);
-        
+        auto basenames = createFileNames(benchmarkPool,benchmarkNode["paths"].as<std::vector<std::string> >());
         
         std::shared_ptr<distributedCartesianArray> data;
-        data= createData(benchmarkNode);
+        data= createData(benchmarkPool.getCommunicator(),benchmarkNode);
 
 
   
@@ -200,7 +226,7 @@ int main(int argc, char ** argv)
         std::shared_ptr<distributedCartesianArray> valid_data;
         if (operation == "read")
         {
-            valid_data = createData(benchmarkNode);
+            valid_data = createData(benchmarkPool.getCommunicator(),benchmarkNode);
         }
 
         indexDataGenerator gen;
