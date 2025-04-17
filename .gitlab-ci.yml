@@ -55,7 +55,7 @@ run_integration_test:
   
   parallel:
     matrix: 
-      - CONFIG_FILE: ["mpi.yaml", "hdf5.yaml","netcdf.yaml","posix.yaml","posixDirect.yaml","posixStrided.yaml","posixLockAhead.yaml"]
+      - CONFIG_FILE: ["mpi.yaml", "hdf5.yaml","netcdf.yaml","posix.yaml","posixDirect.yaml","posixStrided.yaml","posixLockAhead.yaml","mpiPools.yaml"]
   script:
     - *setup_environment
     - cp examples/$CONFIG_FILE config.yaml
