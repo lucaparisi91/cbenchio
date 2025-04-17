@@ -37,6 +37,9 @@ An example configuration file can found in config.yaml .
     - Number of bytes to read/write per operation
 - strided[false] : bool
     - Chunks written by different processors are interleaved.
+- poolSize[nranks(MPI_COMM_WORLD)] : int
+    - Split the ranks in pools , each with a communicator of size poolSize.
+    - The data is read/written by all pools concurrently. Thus the total size read/written is equal to the size of the array indicated by shape argument multipled by the number of pools
 
 ## Build on Archer2
 
