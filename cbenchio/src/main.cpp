@@ -100,7 +100,7 @@ std::vector<std::string> createFileNames( const pool & pool,std::vector<std::str
     for ( auto basePath : basePaths )
     {
         auto filePath=std::filesystem::path();
-
+        filePath/= basePath;
         filePath/= ("data_" + pool.getName() + ".out");
 
         filenames.push_back(filePath);
@@ -182,13 +182,20 @@ int main(int argc, char ** argv)
     int rank=-1, nRanks=-1;
     MPI_Init( &argc , & argv);
     
+    // Read the name of the configuration yaml file from the command line arguments
+    std::string config_file = "config.yaml"; // default value
+    if (argc > 1) {
+        config_file = argv[1];
+    }
+    
+    
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
 
     const real_t tol = 1e-7;
 
 
-    YAML::Node config = YAML::LoadFile("config.yaml");
+    YAML::Node config = YAML::LoadFile(config_file);
 
     YAML::Node configOut;
 
