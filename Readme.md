@@ -75,7 +75,7 @@ Assuming `BENCHIO_ROOT` is the path to the root of this repo on the filesystem
 ```bash
 TESTS_ROOT=$BENCHIO_ROOT/cbenchio/regression_tests
 export PYTHONPATH=$BENCHIO_ROOT/cbenchio:$PYTHONPATH
-reframe -R -C  $TESTS_ROOT/platform/cirrus-ex.py -c $TESTS_ROOT -S benchio_exe="/work/z19/shared/lparisi/cbenchio/opt/cbenchio/0.1/bin/benchio" -r
+reframe -R -C  $TESTS_ROOT/platform/cirrus-ex.py -c $TESTS_ROOT -S benchio_exe="<path_to_the_executable>" -r
 ```
 
 
