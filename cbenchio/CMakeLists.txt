@@ -18,6 +18,3 @@ add_subdirectory(yaml-cpp)
 
 enable_testing()
 add_subdirectory( test )
-
-
-

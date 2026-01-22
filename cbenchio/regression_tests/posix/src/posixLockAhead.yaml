@@ -1,0 +1,33 @@
+
+benchmarks:
+    -
+        name: "write"
+        API: "posix"
+        filePerProcess: false
+        processorGrid: [0,0,0]
+        shape: [41943040,1,1]
+        paths: ["data"]
+        repeat: 1
+        sync: true
+        operation: "write"
+        repeat: 1
+        chunkSize: 1048576
+        strided: true
+        lockAhead: true
+        waitLockAhead: true
+        lockNoExpand: true
+    
+    -
+        name: "read"
+        API: "posix"
+        filePerProcess: false
+        processorGrid: [0,0,0]
+        shape: [41943040,1,1]
+        paths: ["data"]
+        repeat: 1
+        sync: true
+        operation: "read"
+        repeat: 1
+        chunkSize: 1048576
+        strided: true
+    

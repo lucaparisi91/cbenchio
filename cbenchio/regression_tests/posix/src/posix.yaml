@@ -1,0 +1,28 @@
+
+benchmarks:
+    -
+        name: "write buffered"
+        API: "posix"
+        filePerProcess: true
+        processorGrid: [0,0,0]
+        shape: [8000000,1,1]
+        paths: ["data"]
+        repeat: 1
+        sync: true
+        operation: "write"
+        direct: false
+        alignment: 0
+        nFields: 4
+    -
+        name: "read and check"
+        API: "posix"
+        filePerProcess: true
+        processorGrid: [0,0,0]
+        shape: [8000000,1,1]
+        paths: ["data"]
+        repeat: 1
+        sync: false
+        alignment: 0
+        direct: false
+        operation: "read"
+        nFields: 4
