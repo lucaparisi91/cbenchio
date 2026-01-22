@@ -4,6 +4,24 @@ This is a simple program to test I/O performance when writing a 2D array to disk
 Currently supports POSIX, MPIIO and HDF5 interface. 
 The only tested filesystem is lustre.
 
+## Building 
+
+The build system uses cmake.
+
+```bash
+mkdir build
+cd build
+cmake ../cbenchio
+make 
+make install
+```
+
+Dependencies are:
+
+- hdf5 ( required )
+- netcdf version >=4 (required )
+- Reframe (optional, only needed for running the integration tests )
+
 ## Configuration
 
 The output is configured using a yaml file.
@@ -48,7 +66,16 @@ See the archer2 build script in scripts directory
 # Run tests on Archer2
 
 The applications contains unit tests.
-You can run them running `ctest` from the build directory. 
-See the scripts directory for an example of how to run the tests on Archer2.
+You can run them running `ctest` from the build directory. The unit tests assume the usage of a slurm scheduler.
+
+There are also regression tests. You can use them using Reframe.
+
+Assuming `BENCHIO_ROOT` is the path to the root of this repo on the filesystem
+
+```bash
+TESTS_ROOT=$BENCHIO_ROOT/cbenchio/regression_tests
+export PYTHONPATH=$BENCHIO_ROOT/cbenchio:$PYTHONPATH
+reframe -R -C  $TESTS_ROOT/platform/cirrus-ex.py -c $TESTS_ROOT -S benchio_exe="/work/z19/shared/lparisi/cbenchio/opt/cbenchio/0.1/bin/benchio" -r
+```
 
 

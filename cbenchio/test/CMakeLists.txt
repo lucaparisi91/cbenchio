@@ -61,6 +61,5 @@ add_parallel_test( test_benchio_array 1)
 add_test_executable( test_benchio_array_aligned )
 add_parallel_test( test_benchio_array_aligned 1)
 
-
 add_test_executable( test_pool )
 add_parallel_test( test_pool 5)
