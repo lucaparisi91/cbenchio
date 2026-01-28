@@ -25,7 +25,7 @@ void hdf5_io::open( std::string filename,  distributedCartesianArray & data, ben
     H5Pset_fapl_mpio(pAccessId, data.getCartesianCommunicator(),  MPI_INFO_NULL);
     if (mode == benchio::writeMode)
     {
-        fileId = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, pAccessId);
+        fileId = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC,  H5P_DEFAULT, pAccessId);
     }
     else if (mode == benchio::readMode)
     {
@@ -46,13 +46,7 @@ void hdf5_io::open( std::string filename,  distributedCartesianArray & data, ben
     std::reverse( dims.begin(),dims.end() );
 
     fileSpaceId=H5Screate_simple(3, dims.begin(), NULL);
-    if ( mode == benchio::writeMode)
-    {
-    }
-    else 
-    {
-
-    }
+   
     
    
     auto offset = to_hsize(data.getLocalOffset());
@@ -75,11 +69,23 @@ void hdf5_io::open( std::string filename,  distributedCartesianArray & data, ben
     pListTransfer = H5Pcreate(H5P_DATASET_XFER);
     if (isCollective) H5Pset_dxpl_mpio(pListTransfer, H5FD_MPIO_COLLECTIVE);
     
+    
 }
 
 void hdf5_io::write( distributedCartesianArray & data) 
 {
-    auto dsetId = H5Dcreate(fileId, ("data" + std::to_string(currentField)).c_str(), H5T_NATIVE_DOUBLE, fileSpaceId, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    auto dpListId = H5Pcreate(H5P_DATASET_CREATE);
+
+    if ( chunkDims.size() >0 )
+    {
+        assert (chunkDims.size() == data.getGlobalShape().size() ); // The shape of chunking must match the shape of the dataset
+        std::reverse( chunkDims.begin(),chunkDims.end() );    
+        auto status = H5Pset_chunk(dpListId, chunkDims.size(), chunkDims.data());
+
+    }
+    auto dsetId = H5Dcreate(fileId, ("data" + std::to_string(currentField)).c_str(), H5T_NATIVE_DOUBLE, fileSpaceId, H5P_DEFAULT, dpListId, H5P_DEFAULT);
+    H5Pclose(dpListId);
+
     auto status = H5Dwrite(dsetId, H5T_NATIVE_DOUBLE, memSpaceId, fileSpaceId, pListTransfer, data.getData().data() );
     H5Dclose(dsetId);
     currentField++;
