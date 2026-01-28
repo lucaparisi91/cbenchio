@@ -11,6 +11,4 @@ class hdf5(Cbenchio):
     """Tests the hdf5 API of benchio"""
     
     executable_opts = ["hdf5.yaml" ]
-    tasks = 4
-
-
+    num_tasks = 4

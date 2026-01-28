@@ -1,0 +1,22 @@
+
+benchmarks:
+    -
+        API: "hdf5"
+        filePerProcess: false
+        processorGrid: [4,1,1]
+        shape: [40,1000,1]
+        paths: ["data"]
+        repeat: 1
+        sync: false
+        operation: "write"
+        chunks: [10,100,1]
+    -
+        API: "hdf5"
+        filePerProcess: false
+        processorGrid: [4,1,1]
+        shape: [40,1000,1]
+        paths: ["data"]
+        repeat: 1
+        sync: false
+        operation: "read"
+    

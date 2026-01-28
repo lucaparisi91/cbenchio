@@ -74,18 +74,21 @@ void hdf5_io::open( std::string filename,  distributedCartesianArray & data, ben
 
 void hdf5_io::write( distributedCartesianArray & data) 
 {
-    auto dpListId = H5Pcreate(H5P_DATASET_CREATE);
 
+    // The dataset creation property list is used to set chunking
+    auto dpListId = H5Pcreate(H5P_DATASET_CREATE);
     if ( chunkDims.size() >0 )
     {
         assert (chunkDims.size() == data.getGlobalShape().size() ); // The shape of chunking must match the shape of the dataset
         std::reverse( chunkDims.begin(),chunkDims.end() );    
         auto status = H5Pset_chunk(dpListId, chunkDims.size(), chunkDims.data());
-
     }
+    
+    // Create the dataset
     auto dsetId = H5Dcreate(fileId, ("data" + std::to_string(currentField)).c_str(), H5T_NATIVE_DOUBLE, fileSpaceId, H5P_DEFAULT, dpListId, H5P_DEFAULT);
     H5Pclose(dpListId);
 
+    // Write the data to the dataset
     auto status = H5Dwrite(dsetId, H5T_NATIVE_DOUBLE, memSpaceId, fileSpaceId, pListTransfer, data.getData().data() );
     H5Dclose(dsetId);
     currentField++;

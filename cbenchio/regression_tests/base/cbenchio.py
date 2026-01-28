@@ -25,7 +25,7 @@ class Cbenchio(rfm.RunOnlyRegressionTest):
         self.data_dir = os.path.join(self.current_system.resourcesdir,
                                      'cbenchio_data')
         self.prerun_cmds = [f'mkdir -p {self.data_folder}']
-
+    
     @run_after('setup')
     def set_executable(self):
         self.executable = self.benchio_exe

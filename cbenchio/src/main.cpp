@@ -158,6 +158,15 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
         {
             writer->unSetCollective();
         }
+
+        std::vector<size_t> defaultChunks;
+        auto chunks = benchmark["chunks"].as<std::vector<size_t> >(defaultChunks);
+        if (chunks.size() >0)
+        {
+            writer->setChunking( chunks );
+        }
+       
+
         return writer;
     }
     else  if (api == "netcdf")
