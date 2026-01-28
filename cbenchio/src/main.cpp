@@ -176,7 +176,18 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
         {
             writer->unSetCollective();
         }
+        
+        std::vector<size_t> defaultChunks;
+        auto chunkDims = benchmark["chunks"].as<std::vector<size_t> >(defaultChunks);
+        if (chunkDims.size() >0)
+        {
+            writer->setChunking( chunkDims );
+        }
+
         return writer;
+
+
+
     }
     else
     {

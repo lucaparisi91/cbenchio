@@ -26,7 +26,7 @@ class hdf5_io : public ctl_io
      * 
      * @param chunkDims vector with chunk dimensions. Same size as number of dimensions of the dataset.
      */
-    void setChunking(std::vector<size_t> chunkDims_) { chunkDims=chunkDims_; };
+    void setChunking(std::vector<size_t> chunkDims_);
 
     private:
 
@@ -34,6 +34,6 @@ class hdf5_io : public ctl_io
     bool isCollective=true;
     hid_t fileId,fileSpaceId,memSpaceId,pListTransfer;
     int currentField=0;
-    std::vector<hsize_t> chunkDims;
+    std::vector<hsize_t> chunkDimsCorder;
     
 };

@@ -1,0 +1,22 @@
+
+benchmarks:
+    -
+        API: "netcdf"
+        filePerProcess: false
+        processorGrid: [4,0,0]
+        shape: [40,1000,1]
+        paths: ["data"]
+        repeat: 1
+        sync: false
+        operation: "write"
+        chunks: [10,100,1]
+    -
+        API: "netcdf"
+        filePerProcess: false
+        processorGrid: [0,0,0]
+        shape: [40,1000,1]
+        paths: ["data"]
+        repeat: 1
+        sync: false
+        operation: "read"
+    

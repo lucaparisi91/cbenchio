@@ -19,6 +19,8 @@ class netcdf_io : public ctl_io
 
     void unSetCollective(){ isCollective=false;}
     
+    void setChunking(std::vector<size_t> chunkDims_);
+
     virtual void sync();
 
     private:
@@ -29,5 +31,5 @@ class netcdf_io : public ctl_io
 
     int currentField=0;
     int dataId=0;
-    
+    std::vector<size_t> chunkDimsCorder;
 };

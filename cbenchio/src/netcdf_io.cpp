@@ -49,6 +49,13 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
 
 }
 
+void netcdf_io::setChunking(std::vector<size_t> chunkDims_) { 
+
+    chunkDimsCorder=chunkDims_; 
+    std::reverse( chunkDimsCorder.begin(),chunkDimsCorder.end() ); 
+};
+
+
 void netcdf_io::write( distributedCartesianArray & data) 
 {   
     int ret;
@@ -60,7 +67,14 @@ void netcdf_io::write( distributedCartesianArray & data)
     size_t shape[3] { data.getLocalShape()[2],data.getLocalShape()[1],data.getLocalShape()[0] } ;
     
     ret = nc_def_var(fileId, ("data" + std::to_string(currentField)).c_str() , NC_DOUBLE, 3, dimIds, &dataId);
-    check(ret, "Create Data variable");
+    check(ret, "Create data variable");
+
+    if ( chunkDimsCorder.size() > 0 )
+    {
+
+        ret= nc_def_var_chunking( fileId, dataId, NC_CHUNKED, chunkDimsCorder.data() );
+        check(ret,"Define chunking for data variable");
+    }
 
     if (isCollective)
     {
