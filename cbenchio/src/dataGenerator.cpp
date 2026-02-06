@@ -7,7 +7,8 @@ void indexDataGenerator::generate( distributedCartesianArray & disData,real_t of
     auto & localData = disData.getData();
     auto localShape = disData.getLocalShape();
     auto localOffset = disData.getLocalOffset();
-    
+    auto globalShape = disData.getGlobalShape();
+
     for( index_t i =0 ; i< localShape[0] ; i++  )
     {
         for( index_t j =0 ; j< localShape[1] ; j++  )
@@ -17,8 +18,9 @@ void indexDataGenerator::generate( distributedCartesianArray & disData,real_t of
                 auto ig = i + localOffset[0];
                 auto jg = j + localOffset[1];
                 auto kg = k + localOffset[2];
+                
+                localData((signed long int)i,(signed long int)j,(signed long int)k)= offset + ig + globalShape[0]*jg + globalShape[0]*globalShape[1]*kg ;
 
-                localData((signed long int)i,(signed long int)j,(signed long int)k)=ig*ig + jg*jg + kg*kg + offset;
             }   
         }
 

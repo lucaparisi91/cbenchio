@@ -24,6 +24,9 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
 
     MPI_Info info = MPI_INFO_NULL;
 
+    ret = nc_set_chunk_cache(0,0,0);
+    check(ret,"Disable chunk cache");
+
     if (mode == benchio::writeMode)
     {
         
@@ -45,7 +48,6 @@ void netcdf_io::open( std::string filename,  distributedCartesianArray & data, b
         ret = nc_open_par(filename.c_str(), NC_NOWRITE | NC_NETCDF4, data.getCartesianCommunicator(), info, &fileId);
     }   
 
-    
 
 }
 
@@ -62,10 +64,11 @@ void netcdf_io::write( distributedCartesianArray & data)
     
     ptrdiff_t stride[3] {1,1,1};
     ptrdiff_t imap[3] {(ptrdiff_t)(data.getLocalShape()[1] *data.getLocalShape()[0]), (ptrdiff_t)(data.getLocalShape()[0]), 1 };
-    
+
     size_t offset[3] { data.getLocalOffset()[2],data.getLocalOffset()[1],data.getLocalOffset()[0] } ;
     size_t shape[3] { data.getLocalShape()[2],data.getLocalShape()[1],data.getLocalShape()[0] } ;
-    
+
+        
     ret = nc_def_var(fileId, ("data" + std::to_string(currentField)).c_str() , NC_DOUBLE, 3, dimIds, &dataId);
     check(ret, "Create data variable");
 
@@ -87,9 +90,10 @@ void netcdf_io::write( distributedCartesianArray & data)
     
 
     check(ret,"Set access mode for the variable");
-    
-    ret = nc_put_varm_double( fileId, dataId, offset,shape, stride,imap, data.getData().data() );
+
+    ret = nc_put_vara_double( fileId, dataId, offset,shape, data.getData().data() );
     check(ret,"Write netcdf variable");
+    
     currentField++;
     
 }
