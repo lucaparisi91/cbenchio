@@ -23,13 +23,22 @@ class netcdf_io : public ctl_io
 
     virtual void sync();
 
+    void setTimestepping(bool time_stepping_) { time_stepping = time_stepping_; }
+
     private:
+    
+    void set_variable();
 
     bool isCollective=true;
     int fileId= 0;
-    int dimIds[3] ;
+    std::vector<int> dimIds;
 
     int currentField=0;
     int dataId=0;
+
+   std::vector<size_t> offset;
+   std::vector<size_t> shape;
+   
+    bool time_stepping=true;
     std::vector<size_t> chunkDimsCorder;
 };
