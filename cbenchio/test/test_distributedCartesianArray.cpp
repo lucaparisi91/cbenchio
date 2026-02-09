@@ -61,8 +61,8 @@ int main(int argc, char ** argv)
     gen.generate( data);
     int N = 100;
 
-    auto sum_expected = N * (N-1)*(2*N-1)/6. * N * 2;
-
+    auto sum_expected = (N*N -1) * (N*N)/ 2;
+    
     auto sum_local = sum(data.getData());
 
 

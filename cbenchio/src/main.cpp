@@ -177,13 +177,17 @@ std::shared_ptr<ctl_io> createWriter(YAML::Node benchmark)
             writer->unSetCollective();
         }
         
-        std::vector<size_t> defaultChunks;
+
+        std::vector<size_t> defaultChunks; // By default do not chunk the dataset.
         auto chunkDims = benchmark["chunks"].as<std::vector<size_t> >(defaultChunks);
         if (chunkDims.size() >0)
         {
             writer->setChunking( chunkDims );
         }
-
+        
+        auto time_stepping = benchmark["timeStepping"].as<bool>(false);
+        writer->setTimeStepping(time_stepping);
+        
         return writer;
 
 
@@ -327,7 +331,6 @@ int main(int argc, char ** argv)
 
                     if( operation=="read" )
                     {
-                        //if (rank==0) std::cout << "Checking read data..." << std::endl;
                         bool isAlmostEqual= ( distance(data->getData(),valid_data->getData()) <= tol);
                         
                         response["valid"]=isAlmostEqual;

@@ -19,6 +19,11 @@ class benchmark
 
     void setFileSync( bool _sync) { sync = _sync; }
     void setOperation(std::string op) { operation=op;   }
+
+    /**
+     * Set the number of fields to write/read. By default, the number of fields is set to 1. 
+      * @param n The number of fields to write/read.
+     */
     void setNFields(size_t n ){nFields=n;} ;
 
     private:
