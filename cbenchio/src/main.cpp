@@ -22,6 +22,34 @@ auto getName(const YAML::Node & benchmark)
 
 }
 
+/**
+ * Factory function to create a data generator based on the "content" field of the benchmark configuration. The data generator is responsible for filling the data structure with values to be written. The type of data generator is determined by the value of the "content" field in the benchmark configuration. If the "content" field is not specified, it defaults to "index", which creates an indexDataGenerator that fills the data with values that are a function of the global index of the data. If the "content" field is set to "random", it creates a randomDataGenerator that fills the data with random values, using a seed for reproducibility. If the "content" field has any other value, an exception is thrown.
+ * @param benchmark The YAML node containing the benchmark configuration.
+ * @return A shared pointer to a data generator object.
+ */
+std::shared_ptr<dataGenerator> createDataGenerator( const YAML::Node & benchmark)
+{
+    auto generatorType = benchmark["content"].as<std::string>("index");
+    
+    if (generatorType == "index")
+    {
+        return std::make_shared<indexDataGenerator>();
+    }
+
+    else if ( generatorType == "random")
+    {
+        int seed = benchmark["seed"].as<int>(12345);
+        return std::make_shared<randomDataGenerator>(seed);
+
+    }
+    else
+    {
+        throw std::invalid_argument(std::string("content generator type not known: ") + generatorType);
+    }
+
+}
+
+
 auto createData( const MPI_Comm & comm, const YAML::Node & benchmark)
 {
 
@@ -260,19 +288,24 @@ int main(int argc, char ** argv)
             valid_data = createData(benchmarkPool.getCommunicator(),benchmarkNode);
         }
 
-        indexDataGenerator gen;
-        if (operation == "read")
+        auto gen = createDataGenerator(  benchmarkNode);
+
+        if (operation == "read") // when reading the data, generate the data that is expected to be read. This is used to check correctness of the data being read.
         {
-            gen.generate(*valid_data);
+            gen->generate(*valid_data);
         }
         else 
         {
-            gen.generate(*data);
+            gen->generate(*data);
         }
         
         auto mode = benchio::writeMode;
         bool isIdirect = benchmarkNode["direct"].as<bool>(false);
 
+
+        /*
+            Are we reading or writing ? Noraml I/O or Direct I/O ?
+        */
         if (operation == "write")
         {
             if (isIdirect) 
@@ -286,7 +319,6 @@ int main(int argc, char ** argv)
             }
 
         }
-
 
         if (operation == "read")
         {
@@ -302,6 +334,9 @@ int main(int argc, char ** argv)
             
         }
 
+        /**
+         * Benchmark loop starts here.
+         */
         for (int i=0;i<repeat;i++)
         {
             for ( auto basename : basenames)
@@ -367,5 +402,5 @@ int main(int argc, char ** argv)
     }
 
     MPI_Finalize();
-
+    
 }
